@@ -6,7 +6,7 @@ defmodule Jeeves.Account do
     user = Repo.get_by(User, email: email)
 
     cond do
-      user && user.password_hash == password ->
+      user && Comeonin.Bcrypt.checkpw(password, user.password_hash) ->
         {:ok, user}
 
       true ->
