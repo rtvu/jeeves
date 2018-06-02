@@ -21,4 +21,10 @@ defmodule JeevesWeb.SessionController do
         |> render("new.html")
     end
   end
+
+  def delete(conn, _params) do
+    conn
+    |> Account.sign_out()
+    |> redirect(to: home_path(conn, :index))
+  end
 end

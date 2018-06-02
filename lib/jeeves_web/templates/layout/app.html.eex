@@ -17,6 +17,20 @@
       <h5 class="my-0 mr-md-auto font-weight-normal">
         <a href="/" class="navbar-brand text-dark"><strong>Jeeves</strong></a>
       </h5>
+      <%= if Jeeves.Account.user_signed_in?(@conn) do %>
+        <nav class="my-2 my-md-0 mr-md-3">
+          Signed in as: <strong>
+          <%= if Jeeves.Account.current_user(@conn).username == nil do %>
+            <%= Jeeves.Account.current_user(@conn).email %>
+          <% else %>
+            <%= Jeeves.Account.current_user(@conn).username %>
+          <% end %>
+          </strong>
+        </nav>
+        <%= link "Sign Out", to: session_path(@conn, :delete), method: :delete, class: "btn btn-outline-primary" %>
+      <% else %>
+        <%= link "Sign In", to: session_path(@conn, :new), class: "btn btn-outline-primary" %>
+      <% end %>
     </div>
 
     <div class="container">
