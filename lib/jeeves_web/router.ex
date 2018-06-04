@@ -21,6 +21,8 @@ defmodule JeevesWeb.Router do
     get("/sign_in", SessionController, :new)
     post("/sign_in", SessionController, :create)
     delete("/sign_out", SessionController, :delete)
+    get("/sign_up", RegistrationController, :new)
+    post("/sign_up", RegistrationController, :create)
   end
 
   # Other scopes may use custom stacks.
