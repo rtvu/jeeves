@@ -8,7 +8,7 @@ defmodule JeevesWeb.SessionController do
   end
 
   def create(conn, %{"session" => %{"email" => email, "password" => password}}) do
-    case Account.sign_in(email, password) do
+    case Account.validate_credentials(email, password) do
       {:ok, user} ->
         conn
         |> put_session(:current_user_id, user.id)

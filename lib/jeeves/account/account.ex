@@ -2,7 +2,7 @@ defmodule Jeeves.Account do
   alias Jeeves.Repo
   alias Jeeves.Account.User
 
-  def sign_in(email, password) do
+  def validate_credentials(email, password) do
     user = Repo.get_by(User, email: email)
 
     cond do
