@@ -14,10 +14,6 @@ defmodule Jeeves.Account do
     end
   end
 
-  def sign_out(conn) do
-    Plug.Conn.configure_session(conn, drop: true)
-  end
-
   def register(params) do
     User.registration_changeset(%User{}, params) |> Repo.insert()
   end

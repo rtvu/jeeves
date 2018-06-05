@@ -24,7 +24,7 @@ defmodule JeevesWeb.SessionController do
 
   def delete(conn, _params) do
     conn
-    |> Account.sign_out()
+    |> configure_session(drop: true)
     |> redirect(to: home_path(conn, :index))
   end
 end
