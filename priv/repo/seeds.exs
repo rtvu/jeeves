@@ -12,16 +12,16 @@
 
 # password = Comeonin.Bcrypt.hashpwsalt("password")
 
-%Jeeves.Account.User{}
-|> Jeeves.Account.User.registration_changeset(%{
+%Jeeves.Accounts.User{}
+|> Jeeves.Accounts.User.registration_changeset(%{
   email: "user@example.com",
   password: "password",
   password_confirmation: "password"
 })
 |> Jeeves.Repo.insert()
 
-%Jeeves.Account.User{}
-|> Jeeves.Account.User.registration_changeset(%{
+%Jeeves.Accounts.User{}
+|> Jeeves.Accounts.User.registration_changeset(%{
   email: "ryan@example.com",
   password: "password",
   password_confirmation: "passwords"

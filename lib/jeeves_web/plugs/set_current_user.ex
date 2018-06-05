@@ -2,7 +2,7 @@ defmodule JeevesWeb.Plugs.SetCurrentUser do
   import Plug.Conn
 
   alias Jeeves.Repo
-  alias Jeeves.Account.User
+  alias Jeeves.Accounts.User
 
   def init(_params) do
   end

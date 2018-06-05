@@ -1,14 +1,14 @@
 defmodule JeevesWeb.SessionController do
   use JeevesWeb, :controller
 
-  alias Jeeves.Account
+  alias Jeeves.Accounts
 
   def new(conn, _params) do
     render(conn, "new.html")
   end
 
   def create(conn, %{"session" => %{"email" => email, "password" => password}}) do
-    case Account.validate_credentials(email, password) do
+    case Accounts.validate_credentials(email, password) do
       {:ok, user} ->
         conn
         |> put_session(:current_user_id, user.id)

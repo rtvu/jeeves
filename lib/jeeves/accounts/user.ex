@@ -1,4 +1,4 @@
-defmodule Jeeves.Account.User do
+defmodule Jeeves.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
