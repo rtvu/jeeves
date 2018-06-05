@@ -17,13 +17,13 @@
       <h5 class="my-0 mr-md-auto font-weight-normal">
         <a href="/" class="navbar-brand text-dark"><strong>Jeeves</strong></a>
       </h5>
-      <%= if Jeeves.Account.user_signed_in?(@conn) do %>
+      <%= if @user_signed_in? do %>
         <nav class="my-2 my-md-0 mr-md-3">
           Signed in as: <strong>
-          <%= if Jeeves.Account.current_user(@conn).username == nil do %>
-            <%= Jeeves.Account.current_user(@conn).email %>
+          <%= if @current_user.username == nil do %>
+            <%= @current_user.email %>
           <% else %>
-            <%= Jeeves.Account.current_user(@conn).username %>
+            <%= @current_user.username %>
           <% end %>
           </strong>
         </nav>
