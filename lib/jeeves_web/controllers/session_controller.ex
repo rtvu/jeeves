@@ -8,7 +8,7 @@ defmodule JeevesWeb.SessionController do
   end
 
   def create(conn, %{"session" => %{"email" => email, "password" => password}}) do
-    case Accounts.validate_credentials(email, password) do
+    case Accounts.validate_user_credentials(email, password) do
       {:ok, user} ->
         conn
         |> put_session(:current_user_id, user.id)
@@ -25,6 +25,6 @@ defmodule JeevesWeb.SessionController do
   def delete(conn, _params) do
     conn
     |> configure_session(drop: true)
-    |> redirect(to: home_path(conn, :index))
+    |> redirect(to: session_path(conn, :new))
   end
 end

@@ -1,11 +1,11 @@
 <div class="auth-form-wrapper">
-  <%= form_for @changeset, registration_path(@conn, :create), [as: :registration, class: "form-signin"], fn f -> %>
+  <%= form_for @changeset, admin_user_path(@conn, :create), [as: :user, class: "form-signin"], fn f -> %>
     <div class="text-center mb-4">
-      <h1 class="h3 mb-3 font-weight-normal">Sign Up</h1>
+      <h1 class="h3 mb-3 font-weight-normal">Create User</h1>
     </div>
 
     <div class="form-label-group">
-      <%= text_input f, :username, class: "form-control", placeholder: "Email address", required: true, autofocus: true %>
+      <%= text_input f, :username, class: "form-control", placeholder: "Username", required: false, autofocus: true %>
       <%= label f, :username, "Username", class: "control-label" %>
       <%= error_tag f, :username %>
     </div>
@@ -28,6 +28,20 @@
       <%= error_tag f, :password_confirmation %>
     </div>
 
-    <%= submit "Sign Up", class: "btn btn-lg btn-primary btn-block" %>
+    <div class="checkbox mb-3">
+      <%= checkbox f, :is_registered, class: "checkbox" %>
+      <%= label f, :is_registered, "Registered", class: "control-label" %>
+      <%= error_tag f, :is_registered %>
+    </div>
+
+    <div class="checkbox mb-3">
+      <%= checkbox f, :is_administrator, class: "checkbox" %>
+      <%= label f, :is_administrator, "Administrator", class: "control-label" %>
+      <%= error_tag f, :is_administrator %>
+    </div>
+
+    <%= submit "Submit", class: "btn btn-lg btn-primary btn-block" %>
   <% end %>
 </div>
+
+<span><%= link "Back", to: admin_user_path(@conn, :index) %></span>

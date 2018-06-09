@@ -1,4 +1,4 @@
-defmodule JeevesWeb.Plugs.AuthenticateUser do
+defmodule JeevesWeb.Plugs.AuthenticateAdminUser do
   import Plug.Conn
   import Phoenix.Controller
   import JeevesWeb.Router.Helpers
@@ -7,11 +7,11 @@ defmodule JeevesWeb.Plugs.AuthenticateUser do
   end
 
   def call(conn, _params) do
-    if conn.assigns.user_signed_in? do
+    if conn.assigns.current_user.is_administrator do
       conn
     else
       conn
-      |> put_flash(:error, "You need to sign in or sign up before continuing.")
+      |> put_flash(:error, "You need to be an administrator to view page.")
       |> redirect(to: session_path(conn, :new))
       |> halt()
     end

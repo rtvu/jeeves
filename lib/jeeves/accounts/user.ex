@@ -1,5 +1,6 @@
 defmodule Jeeves.Accounts.User do
   use Ecto.Schema
+
   import Ecto.Changeset
 
   schema "users" do
@@ -8,30 +9,22 @@ defmodule Jeeves.Accounts.User do
     field(:password_hash, :string)
     field(:is_registered, :boolean, default: false)
     field(:is_administrator, :boolean, default: false)
+
     field(:password, :string, virtual: true)
     field(:password_confirmation, :string, virtual: true)
 
     timestamps()
   end
 
-  # @doc false
-  # def changeset(user, attrs) do
-  #   user
-  #   |> cast(attrs, [:username, :email, :password_hash, :is_registered, :is_administrator])
-  #   |> validate_required([:username, :email, :password_hash, :is_registered, :is_administrator])
-  #   |> unique_constraint(:username)
-  #   |> unique_constraint(:email)
-  # end
-
-  @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:email])
+    |> cast(attrs, [:username, :email, :is_registered, :is_administrator])
     |> validate_required([:email])
+    |> validate_format(:username, ~r/^[a-zA-Z0-9_@.]*$/)
     |> unique_constraint(:email)
+    |> unique_constraint(:username)
   end
 
-  @doc false
   def registration_changeset(user, attrs) do
     user
     |> changeset(attrs)

@@ -1,0 +1,23 @@
+<div class="auth-form-wrapper">
+  <%= form_for @changeset, user_path(@conn, :update, @username), [as: :user, class: "form-signin"], fn f -> %>
+    <div class="text-center mb-4">
+      <h1 class="h3 mb-3 font-weight-normal">Edit User</h1>
+    </div>
+
+    <div class="form-label-group">
+      <%= text_input f, :username, class: "form-control", placeholder: "Username", required: true, autofocus: true %>
+      <%= label f, :username, "Username", class: "control-label" %>
+      <%= error_tag f, :username %>
+    </div>
+
+    <div class="form-label-group">
+      <%= email_input f, :email, class: "form-control", placeholder: "Email address", required: true %>
+      <%= label f, :email, "Email address", class: "control-label" %>
+      <%= error_tag f, :email %>
+    </div>
+
+    <%= submit "Submit", class: "btn btn-lg btn-primary btn-block" %>
+  <% end %>
+</div>
+
+<span><%= link "Back", to: home_path(@conn, :index) %></span>

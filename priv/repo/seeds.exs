@@ -10,20 +10,25 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
-# password = Comeonin.Bcrypt.hashpwsalt("password")
-
-%Jeeves.Accounts.User{}
-|> Jeeves.Accounts.User.registration_changeset(%{
+Jeeves.Accounts.register_user(%{
+  username: "user",
   email: "user@example.com",
   password: "password",
-  password_confirmation: "password"
+  password_confirmation: "password",
+  is_registered: true,
+  is_administrator: true
 })
-|> Jeeves.Repo.insert()
 
-%Jeeves.Accounts.User{}
-|> Jeeves.Accounts.User.registration_changeset(%{
+Jeeves.Accounts.register_user(%{
+  username: "user",
   email: "ryan@example.com",
   password: "password",
   password_confirmation: "passwords"
 })
-|> Jeeves.Repo.insert()
+
+Jeeves.Accounts.register_user(%{
+  username: "dan",
+  email: "dan@example.com",
+  password: "password",
+  password_confirmation: "password"
+})

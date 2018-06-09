@@ -8,7 +8,7 @@ defmodule JeevesWeb.RegistrationController do
   end
 
   def create(conn, %{"registration" => registration_params}) do
-    case Accounts.register(registration_params) do
+    case Accounts.register_user(registration_params) do
       {:ok, user} ->
         conn
         |> put_session(:current_user_id, user.id)
