@@ -19,6 +19,7 @@ defmodule JeevesWeb.Router do
     pipe_through(:browser)
 
     get("/", HomeController, :index)
+    get("/print_client", PrintClientController, :index)
     get("/sign_in", SessionController, :new)
     post("/sign_in", SessionController, :create)
     delete("/sign_out", SessionController, :delete)

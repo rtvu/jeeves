@@ -14,7 +14,9 @@
 
   <body>
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark px-4 mb-3">
-      <a href="/" class="navbar-brand"><strong>Jeeves</strong></a>
+      <%= link to: home_path(@conn, :index), class: "navbar-brand" do %>
+        <strong>Jeeves</strong>
+      <% end %>
 
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle Navigation">
         <span class="navbar-toggler-icon"></span>
@@ -27,7 +29,7 @@
               Apps
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="#">PrintClient</a>
+              <%= link "PrintClient", to: print_client_path(@conn, :index), class: "dropdown-item" %>
             </div>
           </li>
         </ul>
