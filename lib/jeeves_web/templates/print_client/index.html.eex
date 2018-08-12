@@ -1,1 +1,11 @@
-testTEST
+<div id="print-client">
+  <server-file-selector></server-file-selector>
+</div>
+
+<script>
+  var Vue = require('vue')
+
+  new Vue({
+    el: '#print-client'
+  });
+</script>
