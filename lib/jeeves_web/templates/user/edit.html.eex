@@ -16,8 +16,6 @@
       <%= error_tag f, :email %>
     </div>
 
-    <%= submit "Submit", class: "btn btn-lg btn-primary btn-block" %>
+    <%= submit "Submit", class: "btn btn-lg btn-dark btn-block" %>
   <% end %>
 </div>
-
-<span><%= link "Back", to: home_path(@conn, :index) %></span>

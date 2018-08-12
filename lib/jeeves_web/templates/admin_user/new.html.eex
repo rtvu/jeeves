@@ -40,8 +40,6 @@
       <%= error_tag f, :is_administrator %>
     </div>
 
-    <%= submit "Submit", class: "btn btn-lg btn-primary btn-block" %>
+    <%= submit "Submit", class: "btn btn-lg btn-dark btn-block" %>
   <% end %>
 </div>
-
-<span><%= link "Back", to: admin_user_path(@conn, :index) %></span>
