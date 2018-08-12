@@ -1,5 +1,5 @@
 import "phoenix_html"
-// import socket from "./socket"
+import socket from "./socket"
 import Vue from 'vue'
 import ServerFileSelector from './vue/server-file-selector.vue'
 
