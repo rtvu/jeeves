@@ -1,5 +1,10 @@
 <div id="print-client">
-  <server-file-selector></server-file-selector>
+  <h1>PrintClient</h1>
+  <form>
+    <server-file-selector resource="image" start-path="images/5/"></server-file-selector>
+    <server-file-selector resource="config" start-path="config/rolling/horn"></server-file-selector>
+  </form>
+
 </div>
 
 <script>
