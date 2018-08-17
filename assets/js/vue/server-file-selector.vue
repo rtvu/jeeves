@@ -3,7 +3,7 @@
     <form>
       <div class="row my-1">
         <div class="col-2">
-          <button type="button" class="btn btn-sm btn-dark btn-block" @click="launchModal">{{ resource }}</button>
+          <button type="button" class="btn btn-sm btn-dark btn-block" :disabled="disabled" @click="launchModal">{{ resource }}</button>
         </div>
         <div class="col">
           <input type="text" class="form-control form-control-sm" readonly :value="file">
@@ -53,7 +53,16 @@
   import pathHelper from "path"
 
   export default {
-    props: ["resource", "defaultPath", "value"],
+    // props: ["resource", "defaultPath", "value", "disabled"],
+    props: {
+      resource: String,
+      defaultPath: String,
+      value: String,
+      disabled: {
+        type: Boolean,
+        default: false
+      },
+    },
     data () {
       return {
         path: "",
