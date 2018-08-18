@@ -1,9 +1,10 @@
 <div id="print-client">
   <h1 class="text-center">PrintClient</h1>
-  <p>Image: {{ imageFile }}.</p>
-  <p>Config: {{ configFile }}.</p>
+  <printer-connection></printer-connection>
   <server-file-selector resource="image" default-path="images/c/g/" v-model="imageFile" :disabled="printClientDisabled"></server-file-selector>
   <server-file-selector resource="config" default-path="configs/" v-model="configFile" :disabled="printClientDisabled"></server-file-selector>
+  <p>Image: {{ imageFile }}.</p>
+  <p>Config: {{ configFile }}.</p>
 </div>
 
 <script>
