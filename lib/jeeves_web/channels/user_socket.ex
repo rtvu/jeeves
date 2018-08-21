@@ -4,16 +4,23 @@ defmodule JeevesWeb.UserSocket do
   ## Channels
   # channel "room:*", JeevesWeb.RoomChannel
   channel "file_explorer:*", JeevesWeb.FileExplorerChannel
+  channel "print_client:*", JeevesWeb.PrintClientChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
   # transport :longpoll, Phoenix.Transports.LongPoll
 
   @max_age 24 * 60 * 60
-  def connect(%{"token" => token}, socket) do
+  def connect(%{"token" => token, "client_id" => client_id}, socket) do
     case Phoenix.Token.verify(socket, "user token", token, max_age: @max_age) do
       {:ok, user_id} ->
-        {:ok, assign(socket, :current_user_id, user_id)}
+        user = Jeeves.Accounts.get_user!(user_id)
+
+        socket =  socket
+                  |> assign(:current_user_id, user.id)
+                  |> assign(:current_username, user.username)
+                  |> assign(:current_client_id, client_id)
+        {:ok, socket}
       {:error, _reason} ->
         :error
     end

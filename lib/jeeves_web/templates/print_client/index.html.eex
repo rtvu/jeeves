@@ -1,8 +1,16 @@
 <div id="print-client">
   <h1 class="text-center">PrintClient</h1>
-  <printer-connection></printer-connection>
-  <server-file-selector resource="image" default-path="images/c/g/" v-model="imageFile" :disabled="printClientDisabled"></server-file-selector>
-  <server-file-selector resource="config" default-path="configs/" v-model="configFile" :disabled="printClientDisabled"></server-file-selector>
+    <div class="row">
+      <div class="col">
+        <printer-connection @connection-update="updatePrintClientChannel"></printer-connection>
+        <server-file-selector resource="image" default-path="images/c/g/" v-model="imageFile" :disabled="printClientDisabled"></server-file-selector>
+        <server-file-selector resource="config" default-path="configs/" v-model="configFile" :disabled="printClientDisabled"></server-file-selector>
+      </div>
+      <div class="col-3">
+        <display-users :print-client-channel="printClientChannel"></display-users>
+      </div>
+    </div>
+
   <p>Image: {{ imageFile }}.</p>
   <p>Config: {{ configFile }}.</p>
 </div>
@@ -15,7 +23,17 @@
     data: {
       imageFile: "",
       configFile: "",
-      printClientDisabled: true
+      printClientDisabled: true,
+      printClientChannel: null
+    },
+    methods: {
+      updatePrintClientChannel (obj) {
+        if (obj.event == "connected") {
+          this.printClientChannel = obj.printClientChannel
+        } else {
+          this.printClientChannel = null
+        }
+      }
     }
   });
 </script>

@@ -15,7 +15,7 @@ defmodule JeevesWeb.UserController do
     user = Accounts.get_by_username!(username)
 
     case Accounts.update_user(user, user_params) do
-      {:ok, user} ->
+      {:ok, _user} ->
         conn
         |> put_flash(:info, "User updated successfully.")
         |> redirect(to: home_path(conn, :index))

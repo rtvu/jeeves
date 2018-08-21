@@ -12,8 +12,11 @@ defmodule Jeeves.Application do
       supervisor(Jeeves.Repo, []),
       # Start the endpoint when the application starts
       supervisor(JeevesWeb.Endpoint, []),
-      # Start your own worker by calling: Jeeves.Worker.start_link(arg1, arg2, arg3)
-      # worker(Jeeves.Worker, [arg1, arg2, arg3]),
+      # Start the Presence repository
+      supervisor(JeevesWeb.Presence, []),
+
+      supervisor(Registry, [:unique, :print_client_server_registry]),
+      supervisor(JeevesWeb.Services.PrintClientDynamicSupervisor, [])
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
