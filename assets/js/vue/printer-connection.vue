@@ -78,13 +78,14 @@
     methods: {
       clickConnectButton () {
         if (this.printer != "") {
-          this.connected = !this.connected
-          if (this.connected) {
+          // this.connected = !this.connected
+          if (!this.connected) {
             this.printClientChannel = socket.channel(`print_client:${this.printer}`, {})
 
             this.printClientChannel.join()
               .receive("ok", () => {
                 console.log("PrintClientChannel joined successfully.")
+                this.connected = true
                 this.$emit("connection-update", {event: "connected", printClientChannel: this.printClientChannel})
               })
               .receive("error", () => { console.log("Unable to join PrintClientChannel.") })
@@ -100,6 +101,7 @@
             this.printClientChannel.leave()
               .receive("ok", () => {
                 console.log("PrintClientChannel left successfully.")
+                this.connected = false
                 this.$emit("connection-update", {event: "disconnected"})
               })
               .receive("error", () => { console.log("Unable to leave PrintClientChannel.") })
