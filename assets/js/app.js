@@ -1,4 +1,5 @@
 import "phoenix_html"
+import "@fortawesome/fontawesome-free/js/all"
 
 import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
