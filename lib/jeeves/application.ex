@@ -1,6 +1,4 @@
 defmodule Jeeves.Application do
-  # See https://hexdocs.pm/elixir/Application.html
-  # for more information on OTP Applications
   @moduledoc false
 
   use Application
@@ -11,9 +9,12 @@ defmodule Jeeves.Application do
       # Start the Ecto repository
       Jeeves.Repo,
       # Start the endpoint when the application starts
-      JeevesWeb.Endpoint
-      # Starts a worker by calling: Jeeves.Worker.start_link(arg)
-      # {Jeeves.Worker, arg},
+      JeevesWeb.Endpoint,
+      # Start the Presence repository
+      JeevesWeb.Presence,
+
+      {Registry, keys: :unique, name: :print_client_server_registry},
+      JeevesWeb.Services.PrintClientDynamicSupervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

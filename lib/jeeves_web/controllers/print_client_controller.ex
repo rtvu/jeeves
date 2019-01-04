@@ -1,4 +1,4 @@
-defmodule JeevesWeb.HomeController do
+defmodule JeevesWeb.PrintClientController do
   use JeevesWeb, :controller
 
   plug(JeevesWeb.Plugs.AuthenticateUser)

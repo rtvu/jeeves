@@ -1,0 +1,45 @@
+<div class="auth-form-wrapper">
+  <%= form_for @changeset, Routes.admin_user_path(@conn, :create), [as: :user, class: "form-signin"], fn f -> %>
+    <div class="text-center mb-4">
+      <h1 class="h3 mb-3 font-weight-normal">Create User</h1>
+    </div>
+
+    <div class="form-label-group">
+      <%= text_input f, :username, class: "form-control", placeholder: "Username", required: false, autofocus: true %>
+      <%= label f, :username, "Username", class: "control-label" %>
+      <%= error_tag f, :username %>
+    </div>
+
+    <div class="form-label-group">
+      <%= email_input f, :email, class: "form-control", placeholder: "Email address", required: true %>
+      <%= label f, :email, "Email address", class: "control-label" %>
+      <%= error_tag f, :email %>
+    </div>
+
+    <div class="form-label-group">
+      <%= password_input f, :password, class: "form-control", placeholder: "Password", required: true %>
+      <%= label f, :password, class: "control-label" %>
+      <%= error_tag f, :password %>
+    </div>
+
+    <div class="form-label-group">
+      <%= password_input f, :password_confirmation, class: "form-control", placeholder: "Password confirmation", required: true %>
+      <%= label f, :password_confirmation, "Password confirmation", class: "control-label" %>
+      <%= error_tag f, :password_confirmation %>
+    </div>
+
+    <div class="checkbox mb-3">
+      <%= checkbox f, :is_registered, class: "checkbox" %>
+      <%= label f, :is_registered, "Registered", class: "control-label" %>
+      <%= error_tag f, :is_registered %>
+    </div>
+
+    <div class="checkbox mb-3">
+      <%= checkbox f, :is_administrator, class: "checkbox" %>
+      <%= label f, :is_administrator, "Administrator", class: "control-label" %>
+      <%= error_tag f, :is_administrator %>
+    </div>
+
+    <%= submit "Submit", class: "btn btn-lg btn-dark btn-block" %>
+  <% end %>
+</div>
