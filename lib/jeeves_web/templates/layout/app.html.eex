@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Jeeves</title>
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>">
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark px-4 mb-3">
+      <%= link to: Routes.home_path(@conn, :index), class: "navbar-brand" do %>
+        <strong>Jeeves</strong>
+      <% end %>
+    </nav>
+
+    <div class="container">
+      <%= unless is_nil(get_flash(@conn, :info)) do %>
+        <p class="alert alert-success" role="alert"><%= get_flash(@conn, :info) %></p>
+      <% end %>
+      <%= unless is_nil(get_flash(@conn, :error)) do %>
+        <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+      <% end %>
+
+      <script src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+
+      <main role="main">
+        <%= render @view_module, @view_template, assigns %>
+      </main>
+
+    </div>
+  </body>
+</html>
