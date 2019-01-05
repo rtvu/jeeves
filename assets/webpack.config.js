@@ -34,7 +34,7 @@ module.exports = (env, options) => ({
         loader: 'vue-loader'
       },
       {
-        test: /\.scss$/,
+        test: /\.(s*)css$/,
         use: [
           MiniCssExtractPlugin.loader,
           {
