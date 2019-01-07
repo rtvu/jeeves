@@ -11,7 +11,8 @@
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "popper.js": "^1.14.6",
-    "vue": "^2.5.21"
+    "vue": "^2.5.21",
+    "vuedraggable": "^2.17.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
