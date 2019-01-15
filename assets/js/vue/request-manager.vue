@@ -1,118 +1,97 @@
 <template>
-    <form>
-      <div class="row my-1">
-        <div class="col-2">
-          <button type="button" :class="connectButtonClass" @click="clickConnectButton">{{ connectButtonTitle }}</button>
-        </div>
-        <div class="col">
-          <input type="text" class="form-control form-control-sm" :readonly="inputState" v-model="printer" @keypress.enter.prevent>
-        </div>
-        <div class="col-2">
-          <button type="button" :class="controlButtonClass" :disabled="controlButtonState" @click="clickControlButton">{{ controlButtonTitle }}</button>
-        </div>
-      </div>
-    </form>
+  <form>
+    <h1 class="text-center">Request Manager</h1>
+
+    <div class="form-group">
+      <label>Description:</label>
+      <resizable-textarea
+        class="form-control"
+        v-model="request.requestDescription"
+        placeholder="Request Description">
+      </resizable-textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Notes:</label>
+      <resizable-textarea
+        class="form-control"
+        v-model="request.requestNotes"
+        placeholder="Request Notes">
+      </resizable-textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Comments:</label>
+      <resizable-textarea
+        class="form-control"
+        v-model="request.requestComments"
+        placeholder="Request Comments">
+      </resizable-textarea>
+    </div>
+
+    <div class="form-group">
+      <ul class="list-group">
+        <label>Jobs Queue</label>
+        <draggable v-model="request.jobsQueue">
+          <li
+            class="list-group-item"
+
+            v-for="job in request.jobsQueue"
+            :class="{ active : isSelected(job) }"
+            :key="job"
+            @click="handleClick(job)">
+              <div>{{job}}</div>
+              <div>{{job}}</div>
+          </li>
+        </draggable>
+      </ul>
+    </div>
+    {{ request }}
+  </form>
 </template>
 
 <script>
-  import socket from "../socket"
-  import clientID from "../client-id"
-
   export default {
     props: {
     },
     data () {
       return {
-        connected: false,
-        control: false,
-        printer: "",
-        printClientChannel: null
+        request: {
+          requestDescription: "",
+          requestNotes: "",
+          requestComments: "",
+          jobsQueue: ["a", "b", "c"],
+          selectedJob: null
+        }
+        // request: {
+        //   "Request Description": "test",
+        //   "Request Notes": "",
+        //   "Request Comments": "",
+        //   "Jobs Queue": [
+        //     {
+        //       "Job Comments": "",
+        //       "Settings": "",
+        //       "Configuration File": "",
+        //       "Copies": ""
+        //     }
+        //   ]
+        // },
+        // message: "test"
       }
     },
     computed: {
-      connectButtonTitle () {
-        if (this.connected) {
-          return "Disconnect"
-        } else {
-          return "Connect"
-        }
-      },
-      connectButtonClass () {
-        if (this.connected) {
-          return ["btn", "btn-sm", "btn-block", "btn-danger"]
-        } else {
-          return ["btn", "btn-sm", "btn-block", "btn-success"]
-        }
-      },
-      inputState () {
-        if (this.connected) {
-          return true
-        } else {
-          return false
-        }
-      },
-      controlButtonTitle () {
-        if (this.connected && this.control) {
-          return "Release Control"
-        } else {
-          return "Take Control"
-        }
-      },
-      controlButtonClass () {
-        if (this.control) {
-          return ["btn", "btn-sm", "btn-block", "btn-warning"]
-        } else {
-          return ["btn", "btn-sm", "btn-block", "btn-danger"]
-        }
-      },
-      controlButtonState () {
-        if (this.connected) {
-          return false
-        } else {
-          return true
-        }
-      }
     },
     created () {
     },
     methods: {
-      clickConnectButton () {
-        if (this.printer != "") {
-          // this.connected = !this.connected
-          if (!this.connected) {
-            this.printClientChannel = socket.channel(`print_client:${this.printer}`, {})
-
-            this.printClientChannel.join()
-              .receive("ok", () => {
-                console.log("PrintClientChannel joined successfully.")
-                this.connected = true
-                this.$emit("connection-update", {event: "connected", printClientChannel: this.printClientChannel})
-              })
-              .receive("error", () => { console.log("Unable to join PrintClientChannel.") })
-
-            this.printClientChannel.on("control:controlling_client_id", message => {
-              if (clientID == message.controlling_client_id) {
-                this.control = true
-              } else {
-                this.control = false
-              }
-            })
-          } else {
-            this.printClientChannel.leave()
-              .receive("ok", () => {
-                console.log("PrintClientChannel left successfully.")
-                this.connected = false
-                this.$emit("connection-update", {event: "disconnected"})
-              })
-              .receive("error", () => { console.log("Unable to leave PrintClientChannel.") })
-          }
-        }
+      isSelected (selection) {
+        return selection == this.request.selectedJob
       },
-      clickControlButton () {
-        if (this.control) {
-          this.printClientChannel.push("control:release", {})
+      handleClick (selection) {
+        if (this.request.selectedJob == selection) {
+          this.request.selectedJob = null
         } else {
-          this.printClientChannel.push("control:take", {})
+          this.request.selectedJob = selection
         }
       }
     }

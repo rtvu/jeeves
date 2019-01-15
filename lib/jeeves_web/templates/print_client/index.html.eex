@@ -3,8 +3,8 @@
     <div class="row">
       <div class="col">
         <printer-connection @connection-update="updatePrintClientChannel"></printer-connection>
-        <server-file-selector resource="image" default-path="images/c/g/" v-model="imageFile" :disabled="printClientDisabled"></server-file-selector>
-        <server-file-selector resource="config" default-path="configs/" v-model="configFile" :disabled="printClientDisabled"></server-file-selector>
+        <!-- <server-file-selector resource="image" default-path="images/c/g/" v-model="imageFile" :disabled="printClientDisabled"></server-file-selector> -->
+        <!-- <server-file-selector resource="config" default-path="configs/" v-model="configFile" :disabled="printClientDisabled"></server-file-selector> -->
       </div>
       <div class="col-3">
         <display-users :print-client-channel="printClientChannel"></display-users>
@@ -13,11 +13,12 @@
 
   <p>Image: {{ imageFile }}.</p>
   <p>Config: {{ configFile }}.</p>
+
+  <request-manager></request-manager>
 </div>
 
-<script>
-  var Vue = require("vue")
 
+<script>
   new Vue({
     el: "#print-client",
     data: {
