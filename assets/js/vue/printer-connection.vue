@@ -2,13 +2,34 @@
     <form>
       <div class="row my-1">
         <div class="col-2">
-          <button type="button" :class="connectButtonClass" @click="clickConnectButton">{{ connectButtonTitle }}</button>
+          <button
+            ref="connectButton"
+            type="button"
+            style="overflow: hidden;"
+
+            v-b-tooltip.hover
+            :title="connectButtonTitle"
+            :class="connectButtonClass"
+            @click="clickConnectButton">
+              <div ref="connectDiv" style="display: inline-block;">{{ connectButtonTitle }}</div>
+          </button>
         </div>
         <div class="col">
           <input type="text" class="form-control form-control-sm" :readonly="inputState" v-model="printer" @keypress.enter.prevent>
         </div>
         <div class="col-2">
-          <button type="button" :class="controlButtonClass" :disabled="controlButtonState" @click="clickControlButton">{{ controlButtonTitle }}</button>
+          <button
+            ref="controlButton"
+            type="button"
+            style="overflow: hidden;"
+
+            v-b-tooltip.hover
+            :title="controlButtonTitle"
+            :class="controlButtonClass"
+            :disabled="controlButtonState"
+            @click="clickControlButton">
+              <div ref="controlDiv" style="white-space: nowrap; display: inline-block;">{{ controlButtonTitle }}</div>
+          </button>
         </div>
       </div>
     </form>
@@ -17,17 +38,41 @@
 <script>
   import socket from "../socket"
   import clientID from "../client-id"
+  import $ from "jquery"
 
   export default {
     props: {
     },
     data () {
       return {
+        windowWidth: 0,
+        connectTextFit: true,
+        controlTextFit: true,
         connected: false,
         control: false,
         printer: "",
         printClientChannel: null
       }
+    },
+    watch: {
+      windowWidth (newWidth, oldWidth) {
+        this.connectTextFit = $(this.$refs.connectButton).width() > $(this.$refs.connectDiv).width()
+        this.controlTextFit = $(this.$refs.controlButton).width() > $(this.$refs.controlDiv).width()
+      },
+      // connectTextFit (newFit, oldFit) {
+      //   if (newFit) {
+      //     this.$refs.connectDiv.style.visibility = "visible"
+      //   } else {
+      //     this.$refs.connectDiv.style.visibility = "hidden"
+      //   }
+      // },
+      // controlTextFit (newFit, oldFit) {
+      //   if (newFit) {
+      //     this.$refs.controlDiv.style.visibility = "visible"
+      //   } else {
+      //     this.$refs.controlDiv.style.visibility = "hidden"
+      //   }
+      // }
     },
     computed: {
       connectButtonTitle () {
@@ -74,6 +119,20 @@
       }
     },
     created () {
+    },
+    mounted () {
+      this.connectTextFit = $(this.$refs.connectButton).width() > $(this.$refs.connectDiv).width()
+      this.controlTextFit = $(this.$refs.controlButton).width() > $(this.$refs.controlDiv).width()
+      this.$nextTick(() => {
+        window.addEventListener("resize", () => {
+          this.windowWidth = window.innerWidth
+        })
+      })
+    },
+    beforeDestroy () {
+      window.removeEventListener("resize", () => {
+        this.windowWidth = window.innerWidth
+      })
     },
     methods: {
       clickConnectButton () {
