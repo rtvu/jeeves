@@ -1,52 +1,57 @@
 <template>
-    <form>
-      <div class="row my-1">
-        <div class="col-2">
-          <button
-            ref="connectButton"
-            type="button"
-            style="overflow: hidden;"
+  <form>
+    <div class="row my-1">
+      <div class="col-2">
+        <text-flex-button
+          class="small"
 
-            v-b-tooltip.hover
-            :title="connectButtonTitle"
-            :class="connectButtonClass"
-            @click="clickConnectButton">
-              <div ref="connectDiv" style="display: inline-block;">{{ connectButtonTitle }}</div>
-          </button>
-        </div>
-        <div class="col">
-          <input type="text" class="form-control form-control-sm" :readonly="inputState" v-model="printer" @keypress.enter.prevent>
-        </div>
-        <div class="col-2">
-          <button
-            ref="controlButton"
-            type="button"
-            style="overflow: hidden;"
-
-            v-b-tooltip.hover
-            :title="controlButtonTitle"
-            :class="controlButtonClass"
-            :disabled="controlButtonState"
-            @click="clickControlButton">
-              <div ref="controlDiv" style="white-space: nowrap; display: inline-block;">{{ controlButtonTitle }}</div>
-          </button>
-        </div>
+          v-b-tooltip.hover
+          :title="connectButtonTitle"
+          :text="connectButtonTitle"
+          :class="connectButtonClass"
+          @click="clickConnectButton">
+        </text-flex-button>
       </div>
-    </form>
+      <div class="col">
+        <input
+          type="text"
+          class="form-control form-control-sm"
+
+          :readonly="inputState"
+          v-model="printer"
+          @keypress.enter.prevent>
+      </div>
+      <div class="col-2">
+        <text-flex-button
+          class="small"
+
+          v-b-tooltip.hover
+          :title="controlButtonTitle"
+          :text="controlButtonTitle"
+          :class="controlButtonClass"
+          :disabled="controlButtonState"
+          @click="clickControlButton">
+        </text-flex-button>
+      </div>
+    </div>
+  </form>
 </template>
 
 <script>
   import socket from "../socket"
   import clientID from "../client-id"
+  import textFlexButton from "./utilities/text-flex-button"
   import $ from "jquery"
 
   export default {
     props: {
     },
+    components: {
+      "text-flex-button": textFlexButton
+    },
     data () {
       return {
         windowWidth: 0,
-        connectTextFit: true,
         controlTextFit: true,
         connected: false,
         control: false,
@@ -56,7 +61,6 @@
     },
     watch: {
       windowWidth (newWidth, oldWidth) {
-        this.connectTextFit = $(this.$refs.connectButton).width() > $(this.$refs.connectDiv).width()
         this.controlTextFit = $(this.$refs.controlButton).width() > $(this.$refs.controlDiv).width()
       },
       // connectTextFit (newFit, oldFit) {
@@ -121,7 +125,6 @@
     created () {
     },
     mounted () {
-      this.connectTextFit = $(this.$refs.connectButton).width() > $(this.$refs.connectDiv).width()
       this.controlTextFit = $(this.$refs.controlButton).width() > $(this.$refs.controlDiv).width()
       this.$nextTick(() => {
         window.addEventListener("resize", () => {
