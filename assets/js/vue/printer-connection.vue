@@ -1,6 +1,6 @@
 <template>
   <form>
-    <div class="row">
+    <div class="row my-1">
       <div class="col-2">
         <text-flex-button
           class="small btn btn-sm btn-block"
