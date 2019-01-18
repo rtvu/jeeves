@@ -11,6 +11,7 @@ import serverFileSelector from "./vue/server-file-selector"
 import displayUsers from "./vue/display-users"
 import requestManager from "./vue/request-manager"
 import textSelector from "./vue/text-selector"
+import textareaSelector from "./vue/textarea-selector"
 
 window.Vue = Vue
 Vue.use(BootstrapVue);
@@ -20,3 +21,4 @@ Vue.component("server-file-selector", serverFileSelector)
 Vue.component("display-users", displayUsers)
 Vue.component("request-manager", requestManager)
 Vue.component("text-selector", textSelector)
+Vue.component("textarea-selector", textareaSelector)
