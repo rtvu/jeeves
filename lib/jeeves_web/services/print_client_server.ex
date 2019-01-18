@@ -17,8 +17,8 @@ defmodule JeevesWeb.Services.PrintClientServer do
     GenServer.call(via_tuple(print_client_id), {:take_control, client_id, client_username})
   end
 
-  def release_control(print_client_id, client_id) do
-    GenServer.call(via_tuple(print_client_id), {:release_control, client_id})
+  def drop_control(print_client_id, client_id) do
+    GenServer.call(via_tuple(print_client_id), {:drop_control, client_id})
   end
 
   def init(print_client_id) do
@@ -52,7 +52,7 @@ defmodule JeevesWeb.Services.PrintClientServer do
     {:reply, :ok, state}
   end
 
-  def handle_call({:release_control, client_id}, _from, state) do
+  def handle_call({:drop_control, client_id}, _from, state) do
     state =
       if (state.controlling_client_id == client_id) do
         %{state | controlling_client_id: "",

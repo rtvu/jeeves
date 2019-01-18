@@ -1,13 +1,13 @@
 <template>
   <button
-    ref="button"
     type="button"
     style="overflow: hidden; white-space: nowrap;"
 
+    ref="button"
     v-on="$listeners">
-      <div ref="content" style="display: inline-block;">{{ buttonText }}</div>
-      <div ref="text" style="visibility: hidden; display: inline-block; position: absolute;">{{ text }}</div>
-      <div ref="ellipsis" style="visibility: hidden; display: inline-block; position: absolute;">{{ ellipsis }}</div>
+      <div style="display: inline-block;" ref="content">{{ buttonText }}</div>
+      <div style="visibility: hidden; display: inline-block; position: absolute;" ref="text">{{ text }}</div>
+      <div style="visibility: hidden; display: inline-block; position: absolute;" ref="ellipsis">{{ ellipsis }}</div>
   </button>
 </template>
 

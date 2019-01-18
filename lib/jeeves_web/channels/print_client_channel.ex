@@ -31,10 +31,10 @@ defmodule JeevesWeb.PrintClientChannel do
     {:reply, :ok, socket}
   end
 
-  def handle_in("control:release", _message, socket) do
+  def handle_in("control:drop", _message, socket) do
     print_client_id = socket.assigns[:current_print_client_id]
     client_id = socket.assigns[:current_client_id]
-    PrintClientServer.release_control(print_client_id, client_id)
+    PrintClientServer.drop_control(print_client_id, client_id)
 
     {:reply, :ok, socket}
   end

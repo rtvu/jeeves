@@ -1,35 +1,39 @@
 <template>
   <form>
-    <div class="row my-1">
+    <div class="row">
       <div class="col-2">
         <text-flex-button
-          class="small"
+          class="small btn btn-sm btn-block"
 
           v-b-tooltip.hover
-          :title="connectButtonTitle"
-          :text="connectButtonTitle"
-          :class="connectButtonClass"
-          @click="clickConnectButton">
+          :title="connectionButtonText"
+
+          :text="connectionButtonText"
+          :class="connectionButtonClass"
+          @click="clickConnectionButton">
         </text-flex-button>
       </div>
+
       <div class="col">
         <input
           type="text"
           class="form-control form-control-sm"
 
-          :readonly="inputState"
-          v-model="printer"
+          :readonly="isInputInactive"
+          v-model="printerID"
           @keypress.enter.prevent>
       </div>
+
       <div class="col-2">
         <text-flex-button
-          class="small"
+          class="small btn btn-sm btn-block"
 
           v-b-tooltip.hover
-          :title="controlButtonTitle"
-          :text="controlButtonTitle"
+          :title="controlButtonText"
+
+          :text="controlButtonText"
           :class="controlButtonClass"
-          :disabled="controlButtonState"
+          :disabled="isControlButtonDisabled"
           @click="clickControlButton">
         </text-flex-button>
       </div>
@@ -44,135 +48,80 @@
   import $ from "jquery"
 
   export default {
-    props: {
-    },
     components: {
       "text-flex-button": textFlexButton
     },
     data () {
       return {
-        windowWidth: 0,
-        controlTextFit: true,
-        connected: false,
-        control: false,
-        printer: "",
+        isConnected: false,
+        hasControl: false,
+        printerID: "",
         printClientChannel: null
       }
     },
-    watch: {
-      windowWidth (newWidth, oldWidth) {
-        this.controlTextFit = $(this.$refs.controlButton).width() > $(this.$refs.controlDiv).width()
-      },
-      // connectTextFit (newFit, oldFit) {
-      //   if (newFit) {
-      //     this.$refs.connectDiv.style.visibility = "visible"
-      //   } else {
-      //     this.$refs.connectDiv.style.visibility = "hidden"
-      //   }
-      // },
-      // controlTextFit (newFit, oldFit) {
-      //   if (newFit) {
-      //     this.$refs.controlDiv.style.visibility = "visible"
-      //   } else {
-      //     this.$refs.controlDiv.style.visibility = "hidden"
-      //   }
-      // }
-    },
     computed: {
-      connectButtonTitle () {
-        if (this.connected) {
-          return "Disconnect"
-        } else {
-          return "Connect"
-        }
+      connectionButtonText () {
+        return this.isConnected ? "Disconnect" : "Connect"
       },
-      connectButtonClass () {
-        if (this.connected) {
-          return ["btn", "btn-sm", "btn-block", "btn-danger"]
-        } else {
-          return ["btn", "btn-sm", "btn-block", "btn-success"]
-        }
+      connectionButtonClass () {
+        return this.isConnected ? ["btn-danger"] : ["btn-success"]
       },
-      inputState () {
-        if (this.connected) {
-          return true
-        } else {
-          return false
-        }
+      isInputInactive () {
+        return this.isConnected
       },
-      controlButtonTitle () {
-        if (this.connected && this.control) {
-          return "Release Control"
-        } else {
-          return "Take Control"
-        }
+      controlButtonText () {
+        return this.hasControl ? "Drop Control" : "Take Control"
       },
       controlButtonClass () {
-        if (this.control) {
-          return ["btn", "btn-sm", "btn-block", "btn-warning"]
-        } else {
-          return ["btn", "btn-sm", "btn-block", "btn-danger"]
-        }
+        return this.hasControl ? ["btn-warning"] : ["btn-danger"]
       },
-      controlButtonState () {
-        if (this.connected) {
-          return false
-        } else {
-          return true
-        }
+      isControlButtonDisabled () {
+        return !this.isConnected
       }
     },
-    created () {
-    },
-    mounted () {
-      this.controlTextFit = $(this.$refs.controlButton).width() > $(this.$refs.controlDiv).width()
-      this.$nextTick(() => {
-        window.addEventListener("resize", () => {
-          this.windowWidth = window.innerWidth
-        })
-      })
-    },
-    beforeDestroy () {
-      window.removeEventListener("resize", () => {
-        this.windowWidth = window.innerWidth
-      })
-    },
     methods: {
-      clickConnectButton () {
-        if (this.printer != "") {
-          // this.connected = !this.connected
-          if (!this.connected) {
-            this.printClientChannel = socket.channel(`print_client:${this.printer}`, {})
+      clickConnectionButton () {
+        if (this.printerID != "") {
+          if (!this.isConnected) {
+            this.printClientChannel = socket.channel(`print_client:${this.printerID}`, {})
 
             this.printClientChannel.join()
               .receive("ok", () => {
                 console.log("PrintClientChannel joined successfully.")
-                this.connected = true
+                this.isConnected = true
                 this.$emit("connection-update", {event: "connected", printClientChannel: this.printClientChannel})
               })
-              .receive("error", () => { console.log("Unable to join PrintClientChannel.") })
+              .receive("error", () => {
+                console.log("Unable to join PrintClientChannel.")
+                this.printClientChannel = null
+              })
+              .receive("timeout", () => {
+                console.log("Unable to join PrintClientChannel.")
+                this.printClientChannel = null
+              })
 
             this.printClientChannel.on("control:controlling_client_id", message => {
-              if (clientID == message.controlling_client_id) {
-                this.control = true
-              } else {
-                this.control = false
-              }
+              this.hasControl = clientID == message.controlling_client_id
             })
           } else {
+            this.printClientChannel.push("control:drop", {})
+            this.hasControl = false
+
             this.printClientChannel.leave()
               .receive("ok", () => {
                 console.log("PrintClientChannel left successfully.")
-                this.connected = false
+                this.isConnected = false
+                this.printClientChannel = null
                 this.$emit("connection-update", {event: "disconnected"})
               })
               .receive("error", () => { console.log("Unable to leave PrintClientChannel.") })
+              .receive("timeout", () => { console.log("Unable to leave PrintClientChannel.") })
           }
         }
       },
       clickControlButton () {
-        if (this.control) {
-          this.printClientChannel.push("control:release", {})
+        if (this.hasControl) {
+          this.printClientChannel.push("control:drop", {})
         } else {
           this.printClientChannel.push("control:take", {})
         }
