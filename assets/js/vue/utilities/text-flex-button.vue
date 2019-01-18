@@ -4,6 +4,7 @@
     style="overflow: hidden; white-space: nowrap;"
 
     ref="button"
+    v-bind="$attrs"
     v-on="$listeners">
       <div style="display: inline-block;" ref="content">{{ buttonText }}</div>
       <div style="visibility: hidden; display: inline-block; position: absolute;" ref="text">{{ text }}</div>
