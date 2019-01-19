@@ -49,7 +49,7 @@
 </template>
 
 <script>
-  import serverFileExplorerChannel from "../server-file-explorer-channel"
+  import serverFileExplorerChannel from "../../server-file-explorer-channel"
   import pathHelper from "path"
 
   export default {

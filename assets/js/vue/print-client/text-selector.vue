@@ -14,20 +14,19 @@
         </div>
       </div>
       <div class="col">
-        <resizable-textarea
+        <input
+          type="text"
           class="form-control form-control-sm"
 
           :value="value"
-          @input="$emit('input', $event)">
-        </resizable-textarea>
+          @input="$emit('input', $event.target.value)">
       </div>
     </div>
   </form>
 </template>
 
 <script>
-  import textFlexButton from "./utilities/text-flex-button"
-  import resizableTextarea from "./utilities/resizable-textarea"
+  import textFlexButton from "../utilities/text-flex-button"
 
   export default {
     props: {
@@ -35,8 +34,7 @@
       value: String
     },
     components: {
-      "text-flex-button": textFlexButton,
-      "resizable-textarea": resizableTextarea
+      "text-flex-button": textFlexButton
     },
     data () {
       return {}

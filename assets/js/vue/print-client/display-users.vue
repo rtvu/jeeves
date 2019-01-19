@@ -25,7 +25,7 @@
 
 <script>
   import {Presence} from "phoenix"
-  import clientID from "../client-id"
+  import clientID from "../../client-id"
 
   export default {
     props: {

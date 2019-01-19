@@ -42,9 +42,9 @@
 </template>
 
 <script>
-  import socket from "../socket"
-  import clientID from "../client-id"
-  import textFlexButton from "./utilities/text-flex-button"
+  import socket from "../../socket"
+  import clientID from "../../client-id"
+  import textFlexButton from "../utilities/text-flex-button"
   import $ from "jquery"
 
   export default {

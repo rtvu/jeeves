@@ -50,11 +50,13 @@
 </template>
 
 <script>
-  import resizableTextarea from "./utilities/resizable-textarea"
+  import draggable from "vuedraggable"
+  import resizableTextarea from "../utilities/resizable-textarea"
 
   export default {
     components: {
-      "resizable-textarea": resizableTextarea
+      "resizable-textarea": resizableTextarea,
+      "draggable": draggable
     },
     props: {
     },
