@@ -22,7 +22,7 @@
       <p>Image: {{ imageFile }}</p>
       <p>Config: {{ configFile }}</p>
     </div>
-    <div class="col-2">
+    <div class="col-4">
       <request-manager></request-manager>
     </div>
   </div>

@@ -5,27 +5,24 @@
     <div class="form-group">
       <label>Description:</label>
       <resizable-textarea
-        class="form-control"
-        v-model="request.description"
-        placeholder="Request Description">
+        class="form-control form-control-sm"
+        v-model="request.description">
       </resizable-textarea>
     </div>
 
     <div class="form-group">
       <label>Notes:</label>
       <resizable-textarea
-        class="form-control"
-        v-model="request.notes"
-        placeholder="Request Notes">
+        class="form-control form-control-sm"
+        v-model="request.notes">
       </resizable-textarea>
     </div>
 
     <div class="form-group">
       <label>Comments:</label>
       <resizable-textarea
-        class="form-control"
-        v-model="request.comments"
-        placeholder="Request Comments">
+        class="form-control form-control-sm"
+        v-model="request.comments">
       </resizable-textarea>
     </div>
 
@@ -34,16 +31,16 @@
         <label>Jobs Queue:</label>
         <draggable v-model="request.queue">
           <li
-            class="list-group-item"
+            class="list-group-item py-1 px-2"
 
             v-for="item in request.queue"
-            :class="{ active : isJobSelected(item.id) }"
+            :class="{active : isJobSelected(item.id)}"
             :key="item.id"
             @click="jobClicked(item.id)">
               <template v-if="isJobSelected(item.id)">
-                <div v-for="(value, key) in item.job">{{ key.charAt(0).toUpperCase() + key.slice(1) + ": " + value }}</div>
+                <div style="font-size: 0.875rem" v-for="(value, key) in item.job">{{ key.charAt(0).toUpperCase() + key.slice(1) + ": " + value }}</div>
               </template>
-              <div v-else>{{"Description: " + item.job.description}}</div>
+              <div style="font-size: 0.875rem" v-else>{{"Description: " + item.job.description}}</div>
           </li>
         </draggable>
       </ul>
