@@ -1,9 +1,17 @@
 <div id="app">
-  <print-client></print-client>
+  <print-client :components="components"></print-client>
 </div>
 
 <script>
   new Vue({
-    el: "#app"
+    el: "#app",
+    data: {
+      components: [
+        {tag: "textarea-selector", resource: "Description", model: "description"},
+        {tag: "textarea-selector", resource: "Comments", model: "comments"},
+        {tag: "text-selector", resource: "Settings", model: "settings"},
+        {tag: "server-file-selector", resource: "Configuration", model: "configuration", default_path: "configurations/"}
+      ]
+    }
   })
 </script>

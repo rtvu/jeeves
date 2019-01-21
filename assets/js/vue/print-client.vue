@@ -1,27 +1,39 @@
 <template>
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
       <div class="col">
         <h1 class="text-center">PrintClient</h1>
           <div class="row">
             <div class="col">
               <printer-connection @connection-update="updatePrintClientChannel"></printer-connection>
-              <textarea-selector resource="Description" v-model="description"></textarea-selector>
-              <textarea-selector resource="Comments" v-model="comments"></textarea-selector>
-              <text-selector resource="Settings" v-model="settings"></text-selector>
-              <server-file-selector resource="Image" default-path="images/c/g/" v-model="imageFile" :disabled="printClientDisabled"></server-file-selector>
-              <!-- <server-file-selector resource="config" default-path="configs/" v-model="configFile" :disabled="printClientDisabled"></server-file-selector> -->
+              <template v-for="component in components">
+                <textarea-selector
+                  v-if="component.tag === 'textarea-selector'"
+                  :resource="component.resource"
+                  v-model="model[component.model]">
+                </textarea-selector>
+                <text-selector
+                  v-if="component.tag === 'text-selector'"
+                  :resource="component.resource"
+                  v-model="model[component.model]">
+                </text-selector>
+                <server-file-selector
+                  v-if="component.tag === 'server-file-selector'"
+                  :resource="component.resource"
+                  :default_path="component.default_path"
+                  v-model="model[component.model]">
+                </server-file-selector>
+              </template>
             </div>
             <div class="col-3">
               <display-users :print-client-channel="printClientChannel"></display-users>
             </div>
           </div>
 
-        <p>Description: {{ description }}</p>
-        <p>Comments: {{ comments }}</p>
-        <p>Settings: {{ settings }}</p>
-        <p>Image: {{ imageFile }}</p>
-        <p>Config: {{ configFile }}</p>
+        <p>Description: {{ model.description }}</p>
+        <p>Comments: {{ model.comments }}</p>
+        <p>Settings: {{ model.settings }}</p>
+        <p>Configuration: {{ model.configuration }}</p>
       </div>
       <div class="col-4">
         <request-manager></request-manager>
@@ -47,17 +59,20 @@
       "text-selector": textSelector,
       "textarea-selector": textareaSelector
     },
+    props: ["components"],
     data () {
+      let model = {}
+      for (let i = 0; i < this.components.length; i++) {
+        model[this.components[i].model] = ""
+      }
+
       return {
-        description: "",
-        comments: "",
-        settings: "",
-        imageFile: "",
-        configFile: "",
+        model: model,
         printClientDisabled: false,
         printClientChannel: null
       }
     },
+
     methods: {
       updatePrintClientChannel (obj) {
         if (obj.event == "connected") {
