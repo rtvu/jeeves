@@ -8,7 +8,7 @@
           v-b-tooltip.hover
           :title="connectionButtonText"
 
-          :text="connectionButtonText"
+          :html="connectionButtonText"
           :class="connectionButtonClass"
           @click="clickConnectionButton">
         </text-flex-button>
@@ -31,7 +31,7 @@
           v-b-tooltip.hover
           :title="controlButtonText"
 
-          :text="controlButtonText"
+          :html="controlButtonText"
           :class="controlButtonClass"
           :disabled="isControlButtonDisabled"
           @click="clickControlButton">

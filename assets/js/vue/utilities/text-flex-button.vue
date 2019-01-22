@@ -6,8 +6,8 @@
     ref="button"
     v-bind="$attrs"
     v-on="$listeners">
-      <div style="display: inline-block;" ref="content">{{ buttonText }}</div>
-      <div style="visibility: hidden; display: inline-block; position: absolute;" ref="text">{{ text }}</div>
+      <div style="display: inline-block;" ref="content"></div>
+      <div style="visibility: hidden; display: inline-block; position: absolute;" ref="html"></div>
       <div style="visibility: hidden; display: inline-block; position: absolute;" ref="ellipsis">{{ ellipsis }}</div>
   </button>
 </template>
@@ -16,24 +16,24 @@
   import $ from "jquery"
 
   export default {
-    props: ["text"],
+    props: ["html"],
     data () {
       return {
         ellipsis: "..",
         windowWidth: 0,
         buttonWidth: 0,
-        textWidth: 0,
+        htmlWidth: 0,
         ellipsisWidth: 0,
       }
     },
     computed: {
-      buttonText () {
+      selector () {
         if (this.buttonWidth < this.ellipsisWidth) {
-          return ""
-        } else if (this.buttonWidth > this.textWidth) {
-          return this.text
+          return "None"
+        } else if (this.buttonWidth > this.htmlWidth) {
+          return "HTML"
         } else {
-          return this.ellipsis
+          return "Ellipsis"
         }
       }
     },
@@ -41,16 +41,33 @@
       windowWidth (newWidth, oldWidth) {
         this.getWidths()
       },
-      text (newText, oldText) {
+      selector (newSelector, oldSelector) {
+        if (newSelector === "None") {
+          $(this.$refs.content).html("")
+        } else if (newSelector === "HTML") {
+          $(this.$refs.content).html(this.html)
+        } else {
+          $(this.$refs.content).html("..")
+        }
+      },
+      html (newHTML, oldHTML) {
+        $(this.$refs.html).html(newHTML)
+
         this.$nextTick(() => {
           this.getWidths()
+
+          if (this.selector === "HTML") {
+            $(this.$refs.content).html(this.html)
+          }
         })
       }
     },
     mounted () {
-      this.getWidths()
+      $(this.$refs.html).html(this.html)
 
       this.$nextTick(() => {
+        this.getWidths()
+
         window.addEventListener("resize", () => {
           this.windowWidth = window.innerWidth
         })
@@ -64,7 +81,7 @@
     methods: {
       getWidths () {
         this.buttonWidth = $(this.$refs.button).width()
-        this.textWidth = $(this.$refs.text).width()
+        this.htmlWidth = $(this.$refs.html).width()
         this.ellipsisWidth = $(this.$refs.ellipsis).width()
       }
     }

@@ -9,7 +9,7 @@
             class="btn btn-sm btn-outline-dark btn-block"
             disabled
 
-            :text="resource">
+            :html="resource">
           </text-flex-button>
         </div>
       </div>
