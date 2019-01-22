@@ -3,7 +3,7 @@
     <div class="row my-1">
       <div class="col-2">
         <text-flex-button
-          class="small btn btn-sm btn-block"
+          class="btn btn-sm btn-block"
 
           v-b-tooltip.hover
           :title="connectionButtonText"
@@ -26,7 +26,7 @@
 
       <div class="col-2">
         <text-flex-button
-          class="small btn btn-sm btn-block"
+          class="btn btn-sm btn-block"
 
           v-b-tooltip.hover
           :title="controlButtonText"
