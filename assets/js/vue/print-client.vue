@@ -20,7 +20,7 @@
                 <server-file-selector
                   v-if="component.tag === 'server-file-selector'"
                   :resource="component.resource"
-                  :default_path="component.default_path"
+                  :default-path="component.defaultPath"
                   v-model="model[component.model]">
                 </server-file-selector>
               </template>
