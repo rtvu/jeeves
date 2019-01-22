@@ -2,6 +2,29 @@
   <form>
     <h1 class="text-center">Request Manager</h1>
 
+    <div class="row form-group">
+      <div class="col">
+        <text-flex-button
+          class="btn btn-sm btn-outline-dark btn-block"
+
+          v-b-tooltip.hover
+          title="New Job"
+
+          html="<i class='mx-1 far fa-file fa-fw'></i>New Job">
+        </text-flex-button>
+      </div>
+      <div class="col">
+        <text-flex-button
+          class="btn btn-sm btn-outline-dark btn-block"
+
+          v-b-tooltip.hover
+          title="Copy Job"
+
+          html="<i class='mx-1 far fa-copy fa-fw'></i>Copy Job">
+        </text-flex-button>
+      </div>
+    </div>
+
     <div class="form-group">
       <label>Description:</label>
       <resizable-textarea
@@ -52,11 +75,13 @@
 <script>
   import draggable from "vuedraggable"
   import resizableTextarea from "../utilities/resizable-textarea"
+  import textFlexButton from "../utilities/text-flex-button"
 
   export default {
     components: {
+      "draggable": draggable,
       "resizable-textarea": resizableTextarea,
-      "draggable": draggable
+      "text-flex-button": textFlexButton,
     },
     props: {
     },
