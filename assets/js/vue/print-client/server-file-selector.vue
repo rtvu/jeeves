@@ -3,7 +3,16 @@
     <form>
       <div class="row my-1">
         <div class="col-2">
-          <button type="button" class="btn btn-sm btn-dark btn-block" :disabled="disabled" @click="launchModal">{{ resource }}</button>
+          <text-flex-button
+            class="btn btn-sm btn-dark btn-block"
+
+            v-b-tooltip.hover
+            :title="resource"
+
+            :disabled="disabled"
+            :html="resource"
+            @click="launchModal">
+          </text-flex-button>
         </div>
         <div class="col">
           <input type="text" class="form-control form-control-sm" readonly :value="file">
@@ -49,11 +58,14 @@
 </template>
 
 <script>
+  import textFlexButton from "../utilities/text-flex-button"
   import serverFileExplorerChannel from "../../server-file-explorer-channel"
   import pathHelper from "path"
 
   export default {
-    // props: ["resource", "defaultPath", "value", "disabled"],
+    components: {
+      "text-flex-button": textFlexButton
+    },
     props: {
       resource: String,
       defaultPath: String,
