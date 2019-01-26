@@ -42,7 +42,7 @@
 </template>
 
 <script>
-  import socket from "../../socket"
+  import getSocket from "../../get-socket"
   import clientID from "../../client-id"
   import textFlexButton from "../utilities/text-flex-button"
   import $ from "jquery"
@@ -83,6 +83,7 @@
       clickConnectionButton () {
         if (this.printerID != "") {
           if (!this.isConnected) {
+            let socket = getSocket()
             this.printClientChannel = socket.channel(`print_client:${this.printerID}`, {})
 
             this.printClientChannel.join()

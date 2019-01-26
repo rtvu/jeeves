@@ -59,7 +59,7 @@
 
 <script>
   import textFlexButton from "../utilities/text-flex-button"
-  import serverFileExplorerChannel from "../../server-file-explorer-channel"
+  import getServerFileExplorerChannel from "../../get-server-file-explorer-channel"
   import pathHelper from "path"
 
   export default {
@@ -107,7 +107,7 @@
       }
     },
     created () {
-      this.serverFileExplorerChannel = serverFileExplorerChannel
+      this.serverFileExplorerChannel = getServerFileExplorerChannel()
 
       this.checkFileExists(this.value)
     },
