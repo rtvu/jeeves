@@ -10,7 +10,19 @@
           v-b-tooltip.hover
           title="New Job"
 
-          html="<i class='mx-1 far fa-file fa-fw'></i>New Job">
+          html="<i class='mx-1 far fa-file fa-fw'></i>New Job"
+          @click="newJobClicked">
+        </text-flex-button>
+      </div>
+      <div class="col">
+        <text-flex-button
+          class="btn btn-sm btn-outline-dark btn-block"
+
+          v-b-tooltip.hover
+          title="Delete Job"
+
+          html="<i class='mx-1 far fa-trash-alt fa-fw'></i>Delete Job"
+          @click="deleteJobClicked">
         </text-flex-button>
       </div>
       <div class="col">
@@ -114,7 +126,8 @@
             }
           ],
         },
-        selectedJob: null
+        selectedJob: null,
+        nextID: 2
       }
     },
     computed: {
@@ -131,6 +144,23 @@
         } else {
           this.selectedJob = job
         }
+      },
+      newJobClicked () {
+        this.request.queue.push({
+          id: this.nextID,
+          job: {
+            description: "new job",
+            comments: "",
+            settings: "",
+            configuration: "",
+            copies: ""
+          }
+        })
+
+        this.nextID = this.nextID + 1
+      },
+      deleteJobClicked () {
+        this.request.queue = this.request.queue.filter(job => job.id != this.selectedJob)
       }
     }
   }
