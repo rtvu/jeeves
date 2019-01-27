@@ -2,21 +2,15 @@
   <form>
     <div class="row my-1">
       <div class="col-2">
-        <div
-          ref="div">
-          <text-flex-button
-            class="btn btn-sm btn-outline-dark btn-block"
-            disabled
+        <tooltip-text-flex-button
+          button-class="btn btn-sm btn-outline-dark btn-block"
+          button-style=""
 
-            :html="resource"
-            @selector="handleSelector">
-          </text-flex-button>
-          <b-tooltip
-            :target="() => $refs.div"
-            :title="resource"
-            :disabled.sync="tooltipDisabled">
-          </b-tooltip>
-        </div>
+          disabled
+
+          :html="resource"
+          :title="resource">
+        </tooltip-text-flex-button>
       </div>
       <div class="col">
         <resizable-textarea
@@ -31,7 +25,7 @@
 </template>
 
 <script>
-  import textFlexButton from "../utilities/text-flex-button"
+  import tooltipTextFlexButton from "../utilities/tooltip-text-flex-button"
   import resizableTextarea from "../utilities/resizable-textarea"
 
   export default {
@@ -40,18 +34,11 @@
       value: String
     },
     components: {
-      "text-flex-button": textFlexButton,
+      "tooltip-text-flex-button": tooltipTextFlexButton,
       "resizable-textarea": resizableTextarea
     },
     data () {
-      return {
-        tooltipDisabled: true
-      }
-    },
-    methods: {
-      handleSelector (obj) {
-        this.tooltipDisabled = obj.selector === "HTML"
-      }
+      return {}
     }
   }
 </script>

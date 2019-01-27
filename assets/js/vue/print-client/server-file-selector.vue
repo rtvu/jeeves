@@ -3,21 +3,15 @@
     <form>
       <div class="row my-1">
         <div class="col-2">
-          <text-flex-button
-            class="btn btn-sm btn-dark btn-block"
-
-            ref="button"
+          <tooltip-text-flex-button
+            button-class="btn btn-sm btn-dark btn-block"
+            button-style=""
 
             :disabled="disabled"
             :html="resource"
-            @click="launchModal"
-            @selector="handleTextFlexSelector">
-          </text-flex-button>
-          <b-tooltip
-            :target="() => $refs.button"
             :title="resource"
-            :disabled.sync="tooltipDisabled">
-          </b-tooltip>
+            @click="launchModal">
+          </tooltip-text-flex-button>
         </div>
         <div class="col">
           <input type="text" class="form-control form-control-sm" readonly :value="file">
@@ -63,13 +57,13 @@
 </template>
 
 <script>
-  import textFlexButton from "../utilities/text-flex-button"
+  import tooltipTextFlexButton from "../utilities/tooltip-text-flex-button"
   import getServerFileExplorerChannel from "../../get-server-file-explorer-channel"
   import pathHelper from "path"
 
   export default {
     components: {
-      "text-flex-button": textFlexButton
+      "tooltip-text-flex-button": tooltipTextFlexButton
     },
     props: {
       resource: String,
@@ -89,8 +83,7 @@
         pathCrumb: "",
         files: "",
         folders: "",
-        selectedItem: "",
-        tooltipDisabled: true
+        selectedItem: ""
       }
     },
     watch: {
@@ -118,9 +111,6 @@
       this.checkFileExists(this.value)
     },
     methods: {
-      handleTextFlexSelector (obj) {
-        this.tooltipDisabled = obj.selector === "HTML"
-      },
       checkFileExists (path) {
         if (this.value != "") {
           this.serverFileExplorerChannel.push("does-file-exist", { path: path })

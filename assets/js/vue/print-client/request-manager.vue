@@ -32,48 +32,48 @@
       <label>Jobs Queue:</label>
       <div class="row form-group">
         <div class="col">
-          <text-flex-button
-            class="btn btn-sm btn-outline-dark btn-block"
+          <tooltip-text-flex-button
+            button-class="btn btn-sm btn-outline-dark btn-block"
+            button-style=""
 
-            v-b-tooltip.hover
             title="Load"
 
             html="<i class='mx-1 far fa-folder-open fa-fw'></i>Load"
             @click="loadJobClicked">
-          </text-flex-button>
+          </tooltip-text-flex-button>
         </div>
         <div class="col">
-          <text-flex-button
-            class="btn btn-sm btn-outline-dark btn-block"
+          <tooltip-text-flex-button
+            button-class="btn btn-sm btn-outline-dark btn-block"
+            button-style=""
 
-            v-b-tooltip.hover
             title="New"
 
             html="<i class='mx-1 far fa-file fa-fw'></i>New"
             @click="newJobClicked">
-          </text-flex-button>
+          </tooltip-text-flex-button>
         </div>
         <div class="col">
-          <text-flex-button
-            class="btn btn-sm btn-outline-dark btn-block"
+          <tooltip-text-flex-button
+            button-class="btn btn-sm btn-outline-dark btn-block"
+            button-style=""
 
-            v-b-tooltip.hover
             title="Delete"
 
             html="<i class='mx-1 far fa-trash-alt fa-fw'></i>Delete"
             @click="deleteJobClicked">
-          </text-flex-button>
+          </tooltip-text-flex-button>
         </div>
         <div class="col">
-          <text-flex-button
-            class="btn btn-sm btn-outline-dark btn-block"
+          <tooltip-text-flex-button
+            button-class="btn btn-sm btn-outline-dark btn-block"
+            button-style=""
 
-            v-b-tooltip.hover
             title="Copy"
 
             html="<i class='mx-1 far fa-copy fa-fw'></i>Copy"
             @click="copyJobClicked">>
-          </text-flex-button>
+          </tooltip-text-flex-button>
         </div>
       </div>
       <ul class="list-group">
@@ -99,13 +99,13 @@
 <script>
   import draggable from "vuedraggable"
   import resizableTextarea from "../utilities/resizable-textarea"
-  import textFlexButton from "../utilities/text-flex-button"
+  import tooltipTextFlexButton from "../utilities/tooltip-text-flex-button"
 
   export default {
     components: {
       "draggable": draggable,
       "resizable-textarea": resizableTextarea,
-      "text-flex-button": textFlexButton,
+      "tooltip-text-flex-button": tooltipTextFlexButton,
     },
     props: {
       currentJob: Object

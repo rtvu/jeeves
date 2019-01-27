@@ -2,21 +2,15 @@
   <form>
     <div class="row my-1">
       <div class="col-2">
-        <text-flex-button
-          class="btn btn-sm btn-block"
-
-          ref="connectionButton"
+        <tooltip-text-flex-button
+          :button-class="connectionButtonClass"
+          button-style=""
 
           :html="connectionButtonText"
-          :class="connectionButtonClass"
-          @click="clickConnectionButton"
-          @selector="selectorConnectionButton">
-        </text-flex-button>
-        <b-tooltip
-          :target="() => $refs.connectionButton"
           :title="connectionButtonText"
-          :disabled.sync="connectionButtonTooltipDisabled">
-        </b-tooltip>
+
+          @click="clickConnectionButton">
+        </tooltip-text-flex-button>
       </div>
 
       <div class="col">
@@ -30,24 +24,16 @@
       </div>
 
       <div class="col-2">
-        <div ref="controlButtonDiv">
-          <text-flex-button
-            class="btn btn-sm btn-block"
+        <tooltip-text-flex-button
+          :button-class="controlButtonClass"
+          button-style=""
 
-            ref="controlButton"
+          :html="controlButtonText"
+          :title="controlButtonText"
 
-            :html="controlButtonText"
-            :class="controlButtonClass"
-            :disabled="isControlButtonDisabled"
-            @click="clickControlButton"
-            @selector="selectorControlButton">>
-          </text-flex-button>
-          <b-tooltip
-            :target="() => $refs.controlButtonDiv"
-            :title="controlButtonText"
-            :disabled.sync="controlButtonTooltipDisabled">
-          </b-tooltip>
-        </div>
+          :disabled="isControlButtonDisabled"
+          @click="clickControlButton">
+        </tooltip-text-flex-button>
       </div>
     </div>
   </form>
@@ -56,21 +42,19 @@
 <script>
   import getSocket from "../../get-socket"
   import clientID from "../../client-id"
-  import textFlexButton from "../utilities/text-flex-button"
+  import tooltipTextFlexButton from "../utilities/tooltip-text-flex-button"
   import $ from "jquery"
 
   export default {
     components: {
-      "text-flex-button": textFlexButton
+      "tooltip-text-flex-button": tooltipTextFlexButton
     },
     data () {
       return {
         isConnected: false,
         hasControl: false,
         printerID: "",
-        printClientChannel: null,
-        connectionButtonTooltipDisabled: true,
-        controlButtonTooltipDisabled: true
+        printClientChannel: null
       }
     },
     computed: {
@@ -78,7 +62,7 @@
         return this.isConnected ? "Disconnect" : "Connect"
       },
       connectionButtonClass () {
-        return this.isConnected ? ["btn-danger"] : ["btn-success"]
+        return this.isConnected ? ["btn", "btn-sm", "btn-block", "btn-danger"] : ["btn", "btn-sm", "btn-block", "btn-success"]
       },
       isInputInactive () {
         return this.isConnected
@@ -87,19 +71,13 @@
         return this.hasControl ? "Drop Control" : "Take Control"
       },
       controlButtonClass () {
-        return this.hasControl ? ["btn-warning"] : ["btn-danger"]
+        return this.hasControl ? ["btn", "btn-sm", "btn-block", "btn-warning"] : ["btn", "btn-sm", "btn-block", "btn-danger"]
       },
       isControlButtonDisabled () {
         return !this.isConnected
       }
     },
     methods: {
-      selectorConnectionButton (obj) {
-        this.connectionButtonTooltipDisabled = obj.selector === "HTML"
-      },
-      selectorControlButton (obj) {
-        this.controlButtonTooltipDisabled = obj.selector === "HTML"
-      },
       clickConnectionButton () {
         if (this.printerID != "") {
           if (!this.isConnected) {
