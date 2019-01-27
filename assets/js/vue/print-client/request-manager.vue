@@ -2,42 +2,6 @@
   <form>
     <h1 class="text-center">Request Manager</h1>
 
-    <div class="row form-group">
-      <div class="col">
-        <text-flex-button
-          class="btn btn-sm btn-outline-dark btn-block"
-
-          v-b-tooltip.hover
-          title="New Job"
-
-          html="<i class='mx-1 far fa-file fa-fw'></i>New Job"
-          @click="newJobClicked">
-        </text-flex-button>
-      </div>
-      <div class="col">
-        <text-flex-button
-          class="btn btn-sm btn-outline-dark btn-block"
-
-          v-b-tooltip.hover
-          title="Delete Job"
-
-          html="<i class='mx-1 far fa-trash-alt fa-fw'></i>Delete Job"
-          @click="deleteJobClicked">
-        </text-flex-button>
-      </div>
-      <div class="col">
-        <text-flex-button
-          class="btn btn-sm btn-outline-dark btn-block"
-
-          v-b-tooltip.hover
-          title="Copy Job"
-
-          html="<i class='mx-1 far fa-copy fa-fw'></i>Copy Job"
-          @click="copyJobClicked">>
-        </text-flex-button>
-      </div>
-    </div>
-
     <div class="form-group">
       <label>Description:</label>
       <resizable-textarea
@@ -62,9 +26,57 @@
       </resizable-textarea>
     </div>
 
+
+
     <div class="form-group">
+      <label>Jobs Queue:</label>
+      <div class="row form-group">
+        <div class="col">
+          <text-flex-button
+            class="btn btn-sm btn-outline-dark btn-block"
+
+            v-b-tooltip.hover
+            title="Load"
+
+            html="<i class='mx-1 far fa-folder-open fa-fw'></i>Load"
+            @click="loadJobClicked">
+          </text-flex-button>
+        </div>
+        <div class="col">
+          <text-flex-button
+            class="btn btn-sm btn-outline-dark btn-block"
+
+            v-b-tooltip.hover
+            title="New"
+
+            html="<i class='mx-1 far fa-file fa-fw'></i>New"
+            @click="newJobClicked">
+          </text-flex-button>
+        </div>
+        <div class="col">
+          <text-flex-button
+            class="btn btn-sm btn-outline-dark btn-block"
+
+            v-b-tooltip.hover
+            title="Delete"
+
+            html="<i class='mx-1 far fa-trash-alt fa-fw'></i>Delete"
+            @click="deleteJobClicked">
+          </text-flex-button>
+        </div>
+        <div class="col">
+          <text-flex-button
+            class="btn btn-sm btn-outline-dark btn-block"
+
+            v-b-tooltip.hover
+            title="Copy"
+
+            html="<i class='mx-1 far fa-copy fa-fw'></i>Copy"
+            @click="copyJobClicked">>
+          </text-flex-button>
+        </div>
+      </div>
       <ul class="list-group">
-        <label>Jobs Queue:</label>
         <draggable v-model="request.queue">
           <li
             class="list-group-item py-1 px-2"
@@ -81,7 +93,6 @@
         </draggable>
       </ul>
     </div>
-    {{ request }}
   </form>
 </template>
 
@@ -163,6 +174,9 @@
         }
 
         this.pushJob(copy)
+      },
+      loadJobClicked () {
+        this.$emit("load-job", {job: this.request.queue.filter(job => job.id === this.selectedJob)[0].job})
       },
       pushJob (job) {
         this.request.queue.push({

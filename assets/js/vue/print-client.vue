@@ -36,7 +36,7 @@
         <p>Configuration: {{ model.configuration }}</p>
       </div>
       <div class="col-4">
-        <request-manager :current-job="model"></request-manager>
+        <request-manager :current-job="model" @load-job="handleLoadJob"></request-manager>
       </div>
     </div>
   </div>
@@ -79,6 +79,11 @@
           this.printClientChannel = obj.printClientChannel
         } else {
           this.printClientChannel = null
+        }
+      },
+      handleLoadJob (obj) {
+        for (let attr in obj.job) {
+          this.model[attr] = obj.job[attr]
         }
       }
     }
