@@ -38,6 +38,8 @@
 
             title="Load"
 
+            :disabled="selectedJob === null"
+
             html="<i class='mx-1 far fa-folder-open fa-fw'></i>Load"
             @click="loadJobClicked">
           </tooltip-text-flex-button>
