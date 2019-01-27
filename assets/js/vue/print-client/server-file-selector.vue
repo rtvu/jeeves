@@ -6,13 +6,18 @@
           <text-flex-button
             class="btn btn-sm btn-dark btn-block"
 
-            v-b-tooltip.hover
-            :title="resource"
+            ref="button"
 
             :disabled="disabled"
             :html="resource"
-            @click="launchModal">
+            @click="launchModal"
+            @selector="handleTextFlexSelector">
           </text-flex-button>
+          <b-tooltip
+            :target="() => $refs.button"
+            :title="resource"
+            :disabled.sync="tooltipDisabled">
+          </b-tooltip>
         </div>
         <div class="col">
           <input type="text" class="form-control form-control-sm" readonly :value="file">
@@ -84,7 +89,8 @@
         pathCrumb: "",
         files: "",
         folders: "",
-        selectedItem: ""
+        selectedItem: "",
+        tooltipDisabled: true
       }
     },
     watch: {
@@ -112,6 +118,9 @@
       this.checkFileExists(this.value)
     },
     methods: {
+      handleTextFlexSelector (obj) {
+        this.tooltipDisabled = obj.selector === "HTML"
+      },
       checkFileExists (path) {
         if (this.value != "") {
           this.serverFileExplorerChannel.push("does-file-exist", { path: path })

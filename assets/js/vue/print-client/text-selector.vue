@@ -3,14 +3,19 @@
     <div class="row my-1">
       <div class="col-2">
         <div
-          v-b-tooltip.hover
-          :title="resource">
+          ref="div">
           <text-flex-button
             class="btn btn-sm btn-outline-dark btn-block"
             disabled
 
-            :html="resource">
+            :html="resource"
+            @selector="handleSelector">
           </text-flex-button>
+          <b-tooltip
+            :target="() => $refs.div"
+            :title="resource"
+            :disabled.sync="tooltipDisabled">
+          </b-tooltip>
         </div>
       </div>
       <div class="col">
@@ -37,7 +42,14 @@
       "text-flex-button": textFlexButton
     },
     data () {
-      return {}
+      return {
+        tooltipDisabled: true
+      }
+    },
+    methods: {
+      handleSelector (obj) {
+        this.tooltipDisabled = obj.selector === "HTML"
+      }
     }
   }
 </script>

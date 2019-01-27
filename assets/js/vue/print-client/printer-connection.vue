@@ -5,13 +5,18 @@
         <text-flex-button
           class="btn btn-sm btn-block"
 
-          v-b-tooltip.hover
-          :title="connectionButtonText"
+          ref="connectionButton"
 
           :html="connectionButtonText"
           :class="connectionButtonClass"
-          @click="clickConnectionButton">
+          @click="clickConnectionButton"
+          @selector="selectorConnectionButton">
         </text-flex-button>
+        <b-tooltip
+          :target="() => $refs.connectionButton"
+          :title="connectionButtonText"
+          :disabled.sync="connectionButtonTooltipDisabled">
+        </b-tooltip>
       </div>
 
       <div class="col">
@@ -25,17 +30,24 @@
       </div>
 
       <div class="col-2">
-        <text-flex-button
-          class="btn btn-sm btn-block"
+        <div ref="controlButtonDiv">
+          <text-flex-button
+            class="btn btn-sm btn-block"
 
-          v-b-tooltip.hover
-          :title="controlButtonText"
+            ref="controlButton"
 
-          :html="controlButtonText"
-          :class="controlButtonClass"
-          :disabled="isControlButtonDisabled"
-          @click="clickControlButton">
-        </text-flex-button>
+            :html="controlButtonText"
+            :class="controlButtonClass"
+            :disabled="isControlButtonDisabled"
+            @click="clickControlButton"
+            @selector="selectorControlButton">>
+          </text-flex-button>
+          <b-tooltip
+            :target="() => $refs.controlButtonDiv"
+            :title="controlButtonText"
+            :disabled.sync="controlButtonTooltipDisabled">
+          </b-tooltip>
+        </div>
       </div>
     </div>
   </form>
@@ -56,7 +68,9 @@
         isConnected: false,
         hasControl: false,
         printerID: "",
-        printClientChannel: null
+        printClientChannel: null,
+        connectionButtonTooltipDisabled: true,
+        controlButtonTooltipDisabled: true
       }
     },
     computed: {
@@ -80,6 +94,12 @@
       }
     },
     methods: {
+      selectorConnectionButton (obj) {
+        this.connectionButtonTooltipDisabled = obj.selector === "HTML"
+      },
+      selectorControlButton (obj) {
+        this.controlButtonTooltipDisabled = obj.selector === "HTML"
+      },
       clickConnectionButton () {
         if (this.printerID != "") {
           if (!this.isConnected) {

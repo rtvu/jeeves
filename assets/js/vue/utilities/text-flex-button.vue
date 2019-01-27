@@ -20,15 +20,17 @@
     data () {
       return {
         ellipsis: "..",
-        windowWidth: 0,
-        buttonWidth: 0,
-        htmlWidth: 0,
-        ellipsisWidth: 0,
+        windowWidth: -1,
+        buttonWidth: -1,
+        htmlWidth: -1,
+        ellipsisWidth: -1
       }
     },
     computed: {
       selector () {
-        if (this.buttonWidth < this.ellipsisWidth) {
+        if (this.windowWidth === this.buttonWidth && this.windowWidth === this.htmlWidth && this.windowWidth === this.ellipsisWidth && this.windowWidth === -1) {
+          return "Initializing"
+        } else if (this.buttonWidth < this.ellipsisWidth) {
           return "None"
         } else if (this.buttonWidth > this.htmlWidth) {
           return "HTML"
@@ -49,6 +51,8 @@
         } else {
           $(this.$refs.content).html("..")
         }
+
+        this.$emit("selector", {selector: newSelector})
       },
       html (newHTML, oldHTML) {
         $(this.$refs.html).html(newHTML)
