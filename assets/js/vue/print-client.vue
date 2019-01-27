@@ -36,7 +36,7 @@
         <p>Configuration: {{ model.configuration }}</p>
       </div>
       <div class="col-4">
-        <request-manager></request-manager>
+        <request-manager :current-job="model"></request-manager>
       </div>
     </div>
   </div>

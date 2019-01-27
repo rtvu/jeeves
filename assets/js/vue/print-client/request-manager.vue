@@ -32,7 +32,8 @@
           v-b-tooltip.hover
           title="Copy Job"
 
-          html="<i class='mx-1 far fa-copy fa-fw'></i>Copy Job">
+          html="<i class='mx-1 far fa-copy fa-fw'></i>Copy Job"
+          @click="copyJobClicked">>
         </text-flex-button>
       </div>
     </div>
@@ -96,6 +97,7 @@
       "text-flex-button": textFlexButton,
     },
     props: {
+      currentJob: Object
     },
     data () {
       return {
@@ -111,7 +113,6 @@
                 comments: "",
                 settings: "",
                 configuration: "",
-                copies: ""
               }
             },
             {
@@ -121,7 +122,6 @@
                 comments: "",
                 settings: "",
                 configuration: "",
-                copies: ""
               }
             }
           ],
@@ -146,21 +146,31 @@
         }
       },
       newJobClicked () {
-        this.request.queue.push({
-          id: this.nextID,
-          job: {
-            description: "new job",
-            comments: "",
-            settings: "",
-            configuration: "",
-            copies: ""
-          }
+        this.pushJob({
+          description: "new job",
+          comments: "",
+          settings: "",
+          configuration: "",
         })
-
-        this.nextID = this.nextID + 1
       },
       deleteJobClicked () {
         this.request.queue = this.request.queue.filter(job => job.id != this.selectedJob)
+      },
+      copyJobClicked () {
+        let copy = {}
+        for (let attr in this.currentJob) {
+          copy[attr] = this.currentJob[attr]
+        }
+
+        this.pushJob(copy)
+      },
+      pushJob (job) {
+        this.request.queue.push({
+          id: this.nextID,
+          job: job
+        })
+
+        this.nextID = this.nextID + 1
       }
     }
   }
