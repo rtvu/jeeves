@@ -34,7 +34,6 @@
     },
     methods: {
       handleSelector (obj) {
-        console.log("hello")
         this.tooltipDisabled = obj.selector === "HTML"
       }
     }
