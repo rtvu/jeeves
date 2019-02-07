@@ -10,7 +10,10 @@
             :disabled="disabled"
             :html="resource"
             :title="resource"
-            @click="launchModal">
+            @click="launchModal"
+
+            v-bind="$attrs"
+            v-on="$listeners">
           </tooltip-text-flex-button>
         </div>
         <div class="col">
@@ -62,6 +65,7 @@
   import pathHelper from "path"
 
   export default {
+    inheritAttrs: false,
     components: {
       "tooltip-text-flex-button": tooltipTextFlexButton
     },

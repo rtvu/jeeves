@@ -18,7 +18,10 @@
           class="form-control form-control-sm"
 
           :value="value"
-          @input="$emit('input', $event.target.value)">
+          @input="$emit('input', $event.target.value)"
+
+          v-bind="$attrs"
+          v-on="$listeners">
       </div>
     </div>
   </form>
@@ -28,6 +31,7 @@
   import tooltipTextFlexButton from "../utilities/tooltip-text-flex-button"
 
   export default {
+    inheritAttrs: false,
     props: {
       resource: String,
       value: String

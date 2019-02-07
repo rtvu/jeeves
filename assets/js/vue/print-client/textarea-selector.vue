@@ -17,7 +17,10 @@
           class="form-control form-control-sm"
 
           :value="value"
-          @input="$emit('input', $event)">
+          @input="$emit('input', $event)"
+
+          v-bind="$attrs"
+          v-on="$listeners">
         </resizable-textarea>
       </div>
     </div>
@@ -29,6 +32,7 @@
   import resizableTextarea from "../utilities/resizable-textarea"
 
   export default {
+    inheritAttrs: false,
     props: {
       resource: String,
       value: String
