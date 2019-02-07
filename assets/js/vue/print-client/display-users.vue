@@ -33,8 +33,8 @@
     },
     data () {
       return {
+        presence: null,
         username: "",
-        presences: {},
         printClientPresence: {},
         userPresences: {}
       }
@@ -47,22 +47,18 @@
     watch: {
       printClientChannel (channel) {
         if (channel != null) {
+          let presence = new Presence(channel)
+          this.presence = presence
+
           channel.push("request:username", {})
             .receive("ok", message => this.username = message.client_username)
 
-          channel.on("presence_state", state => {
-            this.presences = Presence.syncState(this.presences, state)
-            this.retrievePrintClientPresence()
-            this.retrieveUserPresences()
-          })
-
-          channel.on("presence_diff", diff => {
-            this.presences = Presence.syncDiff(this.presences, diff)
+          this.presence.onSync(() => {
             this.retrievePrintClientPresence()
             this.retrieveUserPresences()
           })
         } else {
-          this.presences = {}
+          this.presence = null
           this.username = ""
           this.printClientPresence = {}
           this.userPresences = {}
@@ -71,7 +67,7 @@
     },
     methods: {
       retrievePrintClientPresence() {
-        let printClientMeta = Presence.list(this.presences, (id, {metas: metas}) => {
+        let printClientMeta = this.presence.list((id, {metas: metas}) => {
           if (id.slice(0, 12) == "print_client") {
             return {id: id, metas: metas}
           } else {
@@ -82,7 +78,7 @@
         this.printClientPresence = {controlling_client_id: printClientMeta.controlling_client_id, controlling_client_username: printClientMeta.controlling_client_username}
       },
       retrieveUserPresences() {
-        let userPresences = Presence.list(this.presences, (id, {metas: metas}) => {
+        let userPresences = this.presence.list((id, {metas: metas}) => {
           if (id.slice(0, 4) == "user") {
             return metas[0].username
           } else {
