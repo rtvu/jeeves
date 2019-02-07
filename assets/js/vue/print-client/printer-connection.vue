@@ -57,6 +57,11 @@
         printClientChannel: null
       }
     },
+    watch: {
+      hasControl (newHasControl, oldHasControl) {
+        this.$emit("control-update", {event: "control", hasControl: newHasControl})
+      }
+    },
     computed: {
       connectionButtonText () {
         return this.isConnected ? "Disconnect" : "Connect"
