@@ -21,7 +21,7 @@
           @input="$emit('input', $event.target.value)"
 
           v-bind="$attrs"
-          v-on="$listeners">
+          v-on="listeners">
       </div>
     </div>
   </form>
@@ -41,6 +41,15 @@
     },
     data () {
       return {}
+    },
+    computed: {
+      listeners () {
+        return Object.assign({}, this.$listeners, {
+          input: () => {
+            this.$emit("input", event.target.value)
+          }
+        })
+      }
     }
   }
 </script>
