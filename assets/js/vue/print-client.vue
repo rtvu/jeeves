@@ -95,8 +95,10 @@
         }
       },
       handleLoadJob (obj) {
-        for (let attr in obj.job) {
-          this.model[attr] = obj.job[attr]
+        if (this.active) {
+          for (let attr in obj.job) {
+            this.model[attr] = obj.job[attr]
+          }
         }
       }
     }
