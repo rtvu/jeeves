@@ -1,5 +1,5 @@
 <template>
-  <form>
+  <form v-on:submit.prevent>
     <div class="row my-1">
       <div class="col-2">
         <tooltip-text-flex-button

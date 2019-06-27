@@ -43,3 +43,6 @@ npm-debug.log
 
 # Ignore mount folder
 /mount/
+
+# Ignore experimental folder
+/experimental/
