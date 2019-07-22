@@ -1,4 +1,4 @@
-defmodule JeevesWeb.Services.PrintClientServer do
+defmodule Jeeves.PrintClient.Server do
   use GenServer, restart: :transient
 
   defstruct [print_client_id: nil, topic: nil, key: nil, controlling_client_id: nil, state: nil]

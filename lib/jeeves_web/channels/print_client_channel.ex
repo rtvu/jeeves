@@ -1,9 +1,10 @@
 defmodule JeevesWeb.PrintClientChannel do
   use JeevesWeb, :channel
 
+  alias Jeeves.PrintClient.ConfigurationStoreServer
+  alias Jeeves.PrintClient.DynamicSupervisor
+  alias Jeeves.PrintClient.Server
   alias JeevesWeb.Presence
-  alias JeevesWeb.Services.PrintClientDynamicSupervisor
-  alias JeevesWeb.Services.PrintClientServer
 
   def join("print_client:" <> print_client_id, _message, socket) do
     send(self(), :after_join)
@@ -11,7 +12,7 @@ defmodule JeevesWeb.PrintClientChannel do
     socket =  socket
               |> assign(:current_print_client_id, print_client_id)
 
-    PrintClientDynamicSupervisor.activate(print_client_id)
+    DynamicSupervisor.activate(print_client_id)
 
     {:ok, socket}
   end
@@ -26,7 +27,7 @@ defmodule JeevesWeb.PrintClientChannel do
     print_client_id = socket.assigns[:current_print_client_id]
     client_id = socket.assigns[:current_client_id]
     client_username = socket.assigns[:current_username]
-    PrintClientServer.take_control(print_client_id, client_id, client_username)
+    Server.take_control(print_client_id, client_id, client_username)
 
     {:reply, :ok, socket}
   end
@@ -34,7 +35,7 @@ defmodule JeevesWeb.PrintClientChannel do
   def handle_in("control:drop", _message, socket) do
     print_client_id = socket.assigns[:current_print_client_id]
     client_id = socket.assigns[:current_client_id]
-    PrintClientServer.drop_control(print_client_id, client_id)
+    Server.drop_control(print_client_id, client_id)
 
     {:reply, :ok, socket}
   end

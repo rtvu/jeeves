@@ -1,7 +1,7 @@
-defmodule JeevesWeb.Services.PrintClientDynamicSupervisor do
+defmodule Jeeves.PrintClient.DynamicSupervisor do
   use DynamicSupervisor
 
-  alias JeevesWeb.Services.PrintClientServer
+  alias Jeeves.PrintClient.Server
 
   @print_client_server_registry_name :print_client_server_registry
 
@@ -24,7 +24,7 @@ defmodule JeevesWeb.Services.PrintClientDynamicSupervisor do
   end
 
   defp start_child(print_client_id) do
-    child_spec = {PrintClientServer, print_client_id}
+    child_spec = {Server, print_client_id}
     DynamicSupervisor.start_child(__MODULE__, child_spec)
   end
 end

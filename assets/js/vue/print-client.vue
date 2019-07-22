@@ -1,5 +1,9 @@
 <template>
   <div class="container-fluid">
+    <client-configuration-selector
+      resource="PrintClient Configuration"
+    >
+    </client-configuration-selector>
     <div class="row">
       <div class="col">
         <h1 class="text-center">PrintClient</h1>
@@ -46,6 +50,7 @@
 </template>
 
 <script>
+  import clientConfigurationSelector from "./print-client/client-configuration-selector"
   import printerConnection from "./print-client/printer-connection"
   import serverFileSelector from "./print-client/server-file-selector"
   import displayUsers from "./print-client/display-users"
@@ -55,6 +60,7 @@
 
   export default {
     components: {
+      "client-configuration-selector" : clientConfigurationSelector,
       "printer-connection": printerConnection,
       "server-file-selector": serverFileSelector,
       "display-users": displayUsers,

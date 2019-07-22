@@ -14,7 +14,8 @@ defmodule Jeeves.Application do
       JeevesWeb.Presence,
 
       {Registry, keys: :unique, name: :print_client_server_registry},
-      JeevesWeb.Services.PrintClientDynamicSupervisor
+      Jeeves.PrintClient.DynamicSupervisor,
+      Jeeves.PrintClient.ConfigurationStoreServer
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

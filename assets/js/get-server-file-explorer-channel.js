@@ -20,6 +20,4 @@ function getServerFileExplorerChannel() {
   return serverFileExplorerChannel
 }
 
-
-
 export default getServerFileExplorerChannel
