@@ -2,6 +2,7 @@
   <div class="container-fluid">
     <client-configuration-selector
       resource="PrintClient Configuration"
+      value="1"
     >
     </client-configuration-selector>
     <div class="row">

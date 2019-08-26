@@ -10,9 +10,11 @@ import "bootstrap"
 
 // Vue Imports
 import Vue from "vue"
+import VueCompositionApi from '@vue/composition-api'
 import BootstrapVue from "bootstrap-vue"
 import printClient from "./vue/print-client"
 
 window.Vue = Vue
 Vue.use(BootstrapVue);
+Vue.use(VueCompositionApi)
 Vue.component("print-client", printClient)

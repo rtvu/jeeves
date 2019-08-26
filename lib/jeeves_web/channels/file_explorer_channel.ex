@@ -24,4 +24,16 @@ defmodule JeevesWeb.FileExplorerChannel do
 
     {:reply, {:ok, %{exists: exists}}, socket}
   end
+
+  def handle_in("get-json-contents", %{"path" => path}, socket) do
+    full_path = "mount/" <> path
+
+    with  true = File.regular?(full_path),
+          {:ok, body} <- File.read(full_path),
+          {:ok, json} <- Jason.decode(body) do
+            {:reply, {:ok, json}, socket}
+    else
+      _ -> {:reply, {:failed}, socket}
+    end
+  end
 end

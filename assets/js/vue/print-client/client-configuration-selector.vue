@@ -1,29 +1,19 @@
 <template>
-  <form>
-    <div class="row my-1">
-      <div class="col-2">
-        <tooltip-text-flex-button
-          button-class="btn btn-sm btn-outline-dark btn-block"
-          button-style=""
-
-          disabled
-
-          :html="resource"
-          :title="resource">
-        </tooltip-text-flex-button>
-      </div>
-      <div class="col">
-        <v-select>
-        </v-select>
-      </div>
-    </div>
-  </form>
+  <div>
+    <server-file-selector
+      resource="PrintClient Configurations"
+      default-path="print_client_configurations/"
+      v-model="path">
+    </server-file-selector>
+    <p>Path: {{ path }}</p>
+    <p>Configuration: {{ configuration }}</p>
+  </div>
 </template>
 
 <script>
-  import getServerPrintClientConfigurationStoreChannel from "../../get-server-print-client-configuration-store-channel"
-  import tooltipTextFlexButton from "../utilities/tooltip-text-flex-button"
-  import vSelect from "vue-select"
+  import { ref, reactive, onCreated, watch } from "@vue/composition-api"
+  import getServerFileExplorerChannel from "../../get-server-file-explorer-channel"
+  import serverFileSelector from "./server-file-selector"
 
   export default {
     props: {
@@ -31,14 +21,35 @@
       value: String
     },
     components: {
-      "tooltip-text-flex-button": tooltipTextFlexButton,
-      "v-select" : vSelect
+      "server-file-selector": serverFileSelector,
     },
-    data () {
-      return {}
-    },
-    created () {
-      this.serverFileExplorerChannel = getServerPrintClientConfigurationStoreChannel()
-    },
+    setup(props, context) {
+      const path = ref("")
+      const configuration = ref(null)
+
+      let serverFileExplorerChannel = null
+      onCreated(() => {
+        serverFileExplorerChannel = getServerFileExplorerChannel()
+      })
+
+      watch(() => {
+        if (path.value == "") {
+          configuration.value = null
+          context.emit("hello", "")
+        } else {
+          serverFileExplorerChannel.push("get-json-contents", { path: path.value })
+            .receive("ok", resp => {
+              configuration.value = resp
+          })
+          context.emit("hello", "")
+        }
+      })
+
+
+      return {
+        path,
+        configuration
+      }
+    }
   }
 </script>
