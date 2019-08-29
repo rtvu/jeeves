@@ -20,6 +20,34 @@
         v-model="model[component.model]"
         :disabled="disabled">
       </server-file-selector>
+      <!-- <textarea-selector
+        v-if="component.tag === 'textarea-selector'"
+        :resource="component.resource"
+
+        :value="model[component.model]"
+        @input="handleInput(component.model, $event)"
+
+        :disabled="disabled">
+      </textarea-selector>
+      <text-selector
+        v-if="component.tag === 'text-selector'"
+        :resource="component.resource"
+
+        :value="model[component.model]"
+        @input="handleInput(component.model, $event)"
+
+        :disabled="disabled">
+      </text-selector>
+      <server-file-selector
+        v-if="component.tag === 'server-file-selector'"
+        :resource="component.resource"
+        :default-path="component.defaultPath"
+
+        :value="model[component.model]"
+        @input="handleInput(component.model, $event)"
+
+        :disabled="disabled">
+      </server-file-selector> -->
     </template>
     <template v-for="component in components">
       <p>{{ component.resource }}: {{ model[component.model] }}</p>
@@ -28,7 +56,7 @@
 </template>
 
 <script>
-  import { reactive, ref, computed, watch } from "@vue/composition-api"
+  import { reactive, watch } from "@vue/composition-api"
   import serverFileSelector from "./server-file-selector"
   import textSelector from "./text-selector"
   import textareaSelector from "./textarea-selector"
@@ -41,23 +69,39 @@
     },
     props: {
       components: Array,
-      disabled: Boolean
+      value: Object,
+      disabled: {
+        type: Boolean,
+        default: false
+      },
     },
     setup(props, context) {
+      // let keys = []
       let temp = {}
       for (let i = 0; i < props.components.length; i++) {
+        // keys.push(props.components[i].model)
         temp[props.components[i].model] = ""
       }
-
+      // console.log(Object.keys(props.components))
       const model = reactive(temp)
 
       watch(
-        () => model,
-        (model) => {
-          console.log(model)
-          console.log("hello")
+        () => props.value["comments"],
+        (value) => {
+          console.log("comments changed")
         }
       )
+
+      watch(
+        () => props.value["description"],
+        (value) => {
+          console.log("description changed")
+        }
+      )
+
+      // function handleInput(key, value) {
+      //   model[key] = value
+      // }
 
       return {
         model

@@ -8,12 +8,12 @@
               <server-file-text-requester
                 resource="PrintClient Configurations"
                 default-path="print_client_configurations/"
-                v-model="test"
+                value="print_client_configurations/test.json"
                 @selection-update="handleSelectionUpdate">
               </server-file-text-requester>
               <template v-if="components !== null">
                 <printer-connection @connection-update="updatePrintClientChannel" @control-update="updateControlStatus"></printer-connection>
-                <client-components :components="components" :disabled="!active"></client-components>
+                <client-components :components="components" :value="model" :disabled="!active"></client-components>
               </template>
             </div>
             <template v-if="components !== null">
@@ -54,7 +54,7 @@
       "client-components": clientComponents
     },
     setup(props, context) {
-      const test = ref("print_client_configurations/test.json")
+      const model = reactive({"description":"","comments":"test","settings":"","configuration":""})
 
 
       const components = ref(null)
@@ -126,7 +126,7 @@
       }
 
       return {
-        test,
+        model,
         components,
         badPrintClientConfigurationFile,
         clientHasControl,
