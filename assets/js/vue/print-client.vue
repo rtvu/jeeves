@@ -8,6 +8,7 @@
               <server-file-text-requester
                 resource="PrintClient Configurations"
                 default-path="print_client_configurations/"
+                v-model="test"
                 @selection-update="handleSelectionUpdate">
               </server-file-text-requester>
               <template v-if="components !== null">
@@ -53,6 +54,9 @@
       "client-components": clientComponents
     },
     setup(props, context) {
+      const test = ref("print_client_configurations/test.json")
+
+
       const components = ref(null)
 
       // // TODO: Two step assignment due to not understanding "ref"
@@ -122,6 +126,7 @@
       }
 
       return {
+        test,
         components,
         badPrintClientConfigurationFile,
         clientHasControl,

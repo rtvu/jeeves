@@ -1,13 +1,4 @@
 <template>
-    <!-- <server-file-selector
-      :resource="resource"
-      :default-path="defaultPath"
-
-      :value="value"
-      @input="$emit('input', $event)"
-      v-model="path"
-      :disabled="disabled">
-    </server-file-selector> -->
     <server-file-selector
       :resource="resource"
       :default-path="defaultPath"
@@ -20,7 +11,7 @@
 </template>
 
 <script>
-  import { ref, onCreated, watch } from "@vue/composition-api"
+  import { ref, watch } from "@vue/composition-api"
   import getServerFileExplorerChannel from "../../get-server-file-explorer-channel"
   import serverFileSelector from "./server-file-selector"
 
@@ -41,31 +32,43 @@
       "server-file-selector": serverFileSelector,
     },
     setup(props, context) {
-      const path = ref("")
+      const path = ref(props.value)
 
-      let serverFileExplorerChannel = null
-      onCreated(() => {
-        serverFileExplorerChannel = getServerFileExplorerChannel()
-      })
+      let serverFileExplorerChannel = getServerFileExplorerChannel()
 
       function handleInput(event) {
-        context.emit('input', event)
         path.value = event
       }
 
-      watch(() => {
-        if (path.value == "") {
-          context.emit("selection-update", {path: "", text: ""})
-        } else {
-          serverFileExplorerChannel.push("send-file-as-text", { path: path.value })
-            .receive("ok", resp => {
-              context.emit("selection-update", {path: path.value, text: resp.body})
-            })
-            .receive("failed", () => {
-              context.emit("selection-update", {path: path.value, text: ""})
-            })
-        }
-      })
+      watch(
+        () => props.value,
+        (value) => {
+          if (path.value !== value) {
+            path.value = value
+          }
+        },
+        { lazy: true }
+      )
+
+      watch(
+        path,
+        (path) => {
+          if (path == "") {
+            context.emit("selection-update", {path: "", text: ""})
+            context.emit('input', path)
+          } else {
+            serverFileExplorerChannel.push("send-file-as-text", { path: path })
+              .receive("ok", resp => {
+                context.emit("selection-update", {path: path, text: resp.body})
+                context.emit('input', path)
+              })
+              .receive("failed", () => {
+                context.emit("selection-update", {path: path, text: ""})
+                context.emit('input', path)
+              })
+          }
+        },
+      )
 
       return {
         path,

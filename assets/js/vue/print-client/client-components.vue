@@ -1,30 +1,4 @@
 <template>
-  <!-- <div>
-    <template v-for="component in components">
-      <textarea-selector
-        v-if="component.tag === 'textarea-selector'"
-        :resource="component.resource"
-        v-model="model[component.model]"
-        :disabled="disabled">
-      </textarea-selector>
-      <text-selector
-        v-if="component.tag === 'text-selector'"
-        :resource="component.resource"
-        v-model="model[component.model]"
-        :disabled="disabled">
-      </text-selector>
-      <server-file-selector
-        v-if="component.tag === 'server-file-selector'"
-        :resource="component.resource"
-        :default-path="component.defaultPath"
-        v-model="model[component.model]"
-        :disabled="disabled">
-      </server-file-selector>
-    </template>
-    <template v-for="component in components">
-      <p>{{ component.resource }}: {{ model[component.model] }}</p>
-    </template>
-  </div> -->
   <div>
     <template v-for="component in components">
       <textarea-selector
@@ -76,6 +50,14 @@
       }
 
       const model = reactive(temp)
+
+      watch(
+        () => model,
+        (model) => {
+          console.log(model)
+          console.log("hello")
+        }
+      )
 
       return {
         model
