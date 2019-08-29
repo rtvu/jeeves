@@ -76,20 +76,28 @@
       },
     },
     setup(props, context) {
-      // let keys = []
       let temp = {}
       for (let i = 0; i < props.components.length; i++) {
-        // keys.push(props.components[i].model)
         temp[props.components[i].model] = ""
       }
-      // console.log(Object.keys(props.components))
+
+      let keys = Object.keys(temp).sort()
+      console.log(keys)
+
       const model = reactive(temp)
 
       watch(
-        () => props.value["comments"],
+        () => props.value,
         (value) => {
-          console.log("comments changed")
-        }
+          let valueKeysString = JSON.stringify(Object.keys(value).sort())
+          let keysString = JSON.stringify(keys)
+          if (valueKeysString === keysString) {
+            for (let i = 0; i < keys.length; i++) {
+              model[keys[i]] = value[keys[i]]
+            }
+          }
+        },
+        { deep: true }
       )
 
       watch(
