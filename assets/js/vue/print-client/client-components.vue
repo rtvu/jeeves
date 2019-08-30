@@ -20,37 +20,6 @@
         v-model="model[component.model]"
         :disabled="disabled">
       </server-file-selector>
-      <!-- <textarea-selector
-        v-if="component.tag === 'textarea-selector'"
-        :resource="component.resource"
-
-        :value="model[component.model]"
-        @input="handleInput(component.model, $event)"
-
-        :disabled="disabled">
-      </textarea-selector>
-      <text-selector
-        v-if="component.tag === 'text-selector'"
-        :resource="component.resource"
-
-        :value="model[component.model]"
-        @input="handleInput(component.model, $event)"
-
-        :disabled="disabled">
-      </text-selector>
-      <server-file-selector
-        v-if="component.tag === 'server-file-selector'"
-        :resource="component.resource"
-        :default-path="component.defaultPath"
-
-        :value="model[component.model]"
-        @input="handleInput(component.model, $event)"
-
-        :disabled="disabled">
-      </server-file-selector> -->
-    </template>
-    <template v-for="component in components">
-      <p>{{ component.resource }}: {{ model[component.model] }}</p>
     </template>
   </div>
 </template>
@@ -69,23 +38,40 @@
     },
     props: {
       components: Array,
-      value: Object,
+      value: {
+        Object,
+        default: function () {
+          return {}
+        }
+      },
       disabled: {
         type: Boolean,
         default: false
       },
     },
     setup(props, context) {
-      let temp = {}
+      // 'components.model' serve as keys for 'model'
+      let tempModel = {}
       for (let i = 0; i < props.components.length; i++) {
-        temp[props.components[i].model] = ""
+        tempModel[props.components[i].model] = ""
+      }
+      const model = reactive(tempModel)
+
+      // Collect keys into 'keys'
+      let keys = Object.keys(tempModel).sort()
+
+      // Returns a new object with the same key/values as 'model'
+      function duplicate() {
+        let obj = {}
+
+        for (let i = 0; i < keys.length; i++) {
+          obj[keys[i]] = model[keys[i]]
+        }
+
+        return obj
       }
 
-      let keys = Object.keys(temp).sort()
-      console.log(keys)
-
-      const model = reactive(temp)
-
+      // 'model' should match 'value' if 'value' has all matching keys
       watch(
         () => props.value,
         (value) => {
@@ -93,23 +79,25 @@
           let keysString = JSON.stringify(keys)
           if (valueKeysString === keysString) {
             for (let i = 0; i < keys.length; i++) {
-              model[keys[i]] = value[keys[i]]
+                if (model[keys[i]] !== value[keys[i]]) {
+                  model[keys[i]] = value[keys[i]]
+                }
             }
+          } else {
+            context.emit('input', duplicate())
           }
         },
         { deep: true }
       )
 
+      // Emit to parent when 'model' is changed
       watch(
-        () => props.value["description"],
-        (value) => {
-          console.log("description changed")
-        }
+        () => model,
+        (model) => {
+          context.emit('input', duplicate())
+        },
+        { deep: true }
       )
-
-      // function handleInput(key, value) {
-      //   model[key] = value
-      // }
 
       return {
         model

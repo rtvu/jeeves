@@ -13,7 +13,7 @@
               </server-file-text-requester>
               <template v-if="components !== null">
                 <printer-connection @connection-update="updatePrintClientChannel" @control-update="updateControlStatus"></printer-connection>
-                <client-components :components="components" :value="model" :disabled="!active"></client-components>
+                <client-components :components="components" v-model="model" :disabled="!active"></client-components>
               </template>
             </div>
             <template v-if="components !== null">
