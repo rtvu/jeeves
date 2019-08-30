@@ -16,16 +16,16 @@
                 <client-components :components="components" v-model="model" :disabled="!active"></client-components>
               </template>
             </div>
-            <template v-if="components !== null">
+            <!-- <template v-if="components !== null">
               <div class="col-3">
                 <display-users :print-client-channel="printClientChannel"></display-users>
               </div>
-            </template>
+            </template> -->
           </div>
       </div>
-      <!-- <div class="col-4">
+      <div class="col-4">
         <request-manager :current-job="model" @load-job="handleLoadJob"></request-manager>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
@@ -35,40 +35,26 @@
   import { reactive, ref, computed, watch } from "@vue/composition-api"
   import serverFileTextRequester from "./print-client/server-file-text-requester"
   import printerConnection from "./print-client/printer-connection"
-  import serverFileSelector from "./print-client/server-file-selector"
   import displayUsers from "./print-client/display-users"
   import requestManager from "./print-client/request-manager"
-  import textSelector from "./print-client/text-selector"
-  import textareaSelector from "./print-client/textarea-selector"
   import clientComponents from "./print-client/client-components"
 
   export default {
     components: {
       "server-file-text-requester" : serverFileTextRequester,
       "printer-connection": printerConnection,
-      "server-file-selector": serverFileSelector,
       "display-users": displayUsers,
       "request-manager": requestManager,
-      "text-selector": textSelector,
-      "textarea-selector": textareaSelector,
       "client-components": clientComponents
     },
     setup(props, context) {
-      const model = reactive({"description":"","comments":"test","settings":"","configuration":""})
-
-
+      const model = reactive({})
       const components = ref(null)
-
-      // // TODO: Two step assignment due to not understanding "ref"
-      // const model = ref(null)
-      // model.value = {}
-
       const badPrintClientConfigurationFile = ref(false)
       const clientHasControl = ref(false)
       const printClientChannel = ref(null)
 
       const active = computed(() => {
-        console.log("active")
         return ((printClientChannel.value === null) || clientHasControl.value)
       })
 
