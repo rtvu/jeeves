@@ -1,5 +1,5 @@
 <template>
-  <div ref="div">
+  <div ref="div" :class="divClass">
     <text-flex-button
       :class="buttonClass"
       :style="buttonStyle"
@@ -23,7 +23,7 @@
 
   export default {
     inheritAttrs: false,
-    props: ["buttonClass", "buttonStyle", "html", "title"],
+    props: ["divClass", "buttonClass", "buttonStyle", "html", "title"],
     components: {
       "text-flex-button": textFlexButton
     },
