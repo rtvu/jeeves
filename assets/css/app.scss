@@ -5,6 +5,7 @@
 // **********
 // Overides before file will cascade changes throughout the file
 $component-active-bg: #343a40;
+$sizes: (20: 20%);
 @import "~bootstrap/scss/variables";
 // Overides after file will only apply to current variable
 $dropdown-link-active-color: darken($gray-900, 5%);
