@@ -27,6 +27,7 @@
         <request-manager :current-job="model" @load-job="handleLoadJob"></request-manager>
       </div>
     </div>
+    <button @click="testHandle">Hello</button>
   </div>
 </template>
 
@@ -48,7 +49,8 @@
       "client-components": clientComponents
     },
     setup(props, context) {
-      const model = reactive({})
+      // const model = reactive({model: {}})
+      const model = ref({})
       const components = ref(null)
       const badPrintClientConfigurationFile = ref(false)
       const clientHasControl = ref(false)
@@ -106,9 +108,21 @@
       function handleLoadJob(obj) {
         if (active && (components !== null)) {
           for (let attr in obj.job) {
-            model.value[attr] = obj.job[attr]
+            model[attr] = obj.job[attr]
           }
         }
+      }
+
+      watch(
+        () => model,
+        (model) => {
+          console.log("hello")
+        },
+        { deep: true}
+      )
+
+      function testHandle() {
+        console.log(JSON.stringify(model))
       }
 
       return {
@@ -121,7 +135,8 @@
         handleSelectionUpdate,
         updatePrintClientChannel,
         updateControlStatus,
-        handleLoadJob
+        handleLoadJob,
+        testHandle
       }
     }
   }

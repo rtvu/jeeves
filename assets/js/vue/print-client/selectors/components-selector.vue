@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-for="component in components">
+    <template v-for="component in internalComponents">
       <textarea-selector
         v-if="component.tag === 'textarea-selector'"
         :resource="component.resource"
@@ -20,6 +20,15 @@
         v-model="model[component.model]"
         :disabled="disabled">
       </server-file-selector>
+      <optional-selector
+        v-if="component.tag === 'optional-selector'"
+        :resource="component.resource"
+        :description="component.description"
+        :components="component.components"
+        :selected="component.selected"
+        v-model="model[component.model]"
+        :disabled="disabled">
+      </optional-selector>
     </template>
   </div>
 </template>
@@ -29,19 +38,23 @@
   import serverFileSelector from "./server-file-selector"
   import textSelector from "./text-selector"
   import textareaSelector from "./textarea-selector"
+  import optionalSelector from "./optional-selector"
+  import  { getComponentLiterals } from "./utilities"
 
   export default {
+    name: "components-selector",
     components: {
       "server-file-selector": serverFileSelector,
       "text-selector": textSelector,
-      "textarea-selector": textareaSelector
+      "textarea-selector": textareaSelector,
+      "optional-selector": optionalSelector
     },
     props: {
       components: Array,
-      value: {
-        Object,
+      valuesUpdate: {
+        type: Array,
         default: function () {
-          return {}
+          return []
         }
       },
       disabled: {
@@ -50,41 +63,27 @@
       },
     },
     setup(props, context) {
-      // 'components.model' serve as keys for 'model'
-      let tempModel = {}
-      for (let i = 0; i < props.components.length; i++) {
-        tempModel[props.components[i].model] = ""
-      }
-      const model = reactive(tempModel)
+      // Tags which require object values
+      let objectTags = ["optional-selector"]
 
-      // Collect keys into 'keys'
-      let keys = Object.keys(tempModel).sort()
+      // 'components' serve as template for 'keys'
+      const keys = reactive(getKeyList(props.components, objectTags))
 
-      // Returns a new object with the same key/values as 'model'
-      function duplicate() {
-        let obj = {}
+      // 'components' is expected not to change
+      // Keep internal copy of original 'components'
+      const internalComponents = reactive(duplicateComponents(props.components, keys))
 
-        for (let i = 0; i < keys.length; i++) {
-          obj[keys[i]] = model[keys[i]]
-        }
-
-        return obj
-      }
+      // 'model' is built based on 'keys' specifications
+      const model = reactive(makeModel(keys))
 
       // 'model' should match 'value' if 'value' has all matching keys
       watch(
         () => props.value,
         (value) => {
-          let valueKeysString = JSON.stringify(Object.keys(value).sort())
-          let keysString = JSON.stringify(keys)
-          if (valueKeysString === keysString) {
-            for (let i = 0; i < keys.length; i++) {
-                if (model[keys[i]] !== value[keys[i]]) {
-                  model[keys[i]] = value[keys[i]]
-                }
-            }
+          if (validateObject(value, keys)) {
+            valueCopy(model, value, keys)
           } else {
-            context.emit('input', duplicate())
+            context.emit('input', reactive(copyModel(model, keys)))
           }
         },
         { deep: true }
@@ -94,12 +93,14 @@
       watch(
         () => model,
         (model) => {
-          context.emit('input', duplicate())
+          context.emit('input', reactive(copyModel(model, keys)))
         },
         { deep: true }
       )
 
       return {
+        keys,
+        internalComponents,
         model
       }
     }
