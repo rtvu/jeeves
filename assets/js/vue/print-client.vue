@@ -8,12 +8,19 @@
               <server-file-text-requester
                 resource="PrintClient Configurations"
                 default-path="print_client_configurations/"
-                value="print_client_configurations/test.json"
+                value="print_client_configurations/blah.json"
                 @selection-update="handleSelectionUpdate">
               </server-file-text-requester>
-              <template v-if="components !== null">
-                <printer-connection @connection-update="updatePrintClientChannel" @control-update="updateControlStatus"></printer-connection>
-                <client-components :components="components" v-model="model" :disabled="!active"></client-components>
+              <template v-if="componentsModel !== null">
+                <printer-connection
+                  @connection-update="updatePrintClientChannel"
+                  @control-update="updateControlStatus">
+                </printer-connection>
+                <components-selector
+                  :components="componentsModel.components"
+                  @input="handleComponentInput($event)"
+                  :disabled="!active">
+                </components-selector>
               </template>
             </div>
             <!-- <template v-if="components !== null">
@@ -23,22 +30,23 @@
             </template> -->
           </div>
       </div>
-      <div class="col-4">
+      <!-- <div class="col-4">
         <request-manager :current-job="model" @load-job="handleLoadJob"></request-manager>
-      </div>
+      </div> -->
     </div>
-    <button @click="testHandle">Hello</button>
+    {{ componentsModel }}
   </div>
 </template>
 
 <script>
   import Vue from "vue"
-  import { reactive, ref, computed, watch } from "@vue/composition-api"
+  import { ref, computed, watch } from "@vue/composition-api"
   import serverFileTextRequester from "./print-client/server-file-text-requester"
   import printerConnection from "./print-client/printer-connection"
   import displayUsers from "./print-client/display-users"
   import requestManager from "./print-client/request-manager"
-  import clientComponents from "./print-client/client-components"
+  import componentsSelector from "./print-client/components-selector"
+  import { addValueProperty, setNestedComponentProperty } from "./print-client/components-utilities"
 
   export default {
     components: {
@@ -46,13 +54,10 @@
       "printer-connection": printerConnection,
       "display-users": displayUsers,
       "request-manager": requestManager,
-      "client-components": clientComponents
+      "components-selector": componentsSelector
     },
     setup(props, context) {
-      // const model = reactive({model: {}})
-      const model = ref({})
-      const components = ref(null)
-      const badPrintClientConfigurationFile = ref(false)
+      const componentsModel = ref(null)
       const clientHasControl = ref(false)
       const printClientChannel = ref(null)
 
@@ -61,38 +66,25 @@
       })
 
       function handleSelectionUpdate(obj) {
-        if (obj.text === "") {
-          components.value = null
-          // model.value = {}
-          badPrintClientConfigurationFile.value = (obj.path !== "")
-        } else {
+        componentsModel.value = null
+
+        if (obj.text !== "") {
           try {
-            let tempComponents = JSON.parse(obj.text).components
+            let temp = JSON.parse(obj.text)
+            let tempComponentsModel = temp.rootComponent
+            addValueProperty([tempComponentsModel])
 
-            // let tempModel = {}
-            // for (let i = 0; i < tempComponents.length; i++) {
-            //   tempModel[tempCompoents[i].model] = ""
-            // }
-
-            components.value = null
-            // model.value = {}
-            badPrintClientConfigurationFile.value = false
-            console.log("test")
             Vue.nextTick(() => {
-              console.log("test1")
-              components.value = tempComponents
-              // model.value = tempModel
+              componentsModel.value = tempComponentsModel
             })
           } catch (e) {
-            components.value = null
-            // model.value = {}
-            badPrintClientConfigurationFile.value = true
+            console.log("Could not parse file.")
           }
         }
       }
 
       function updatePrintClientChannel(obj) {
-        if (obj.event == "connected") {
+        if (obj.event === "connected") {
           printClientChannel.value = obj.printClientChannel
         } else {
           printClientChannel.value = null
@@ -100,43 +92,41 @@
       }
 
       function updateControlStatus(obj) {
-        if (obj.event == "control") {
+        if (obj.event === "control") {
           clientHasControl.value = obj.hasControl
         }
       }
 
-      function handleLoadJob(obj) {
-        if (active && (components !== null)) {
-          for (let attr in obj.job) {
-            model[attr] = obj.job[attr]
-          }
-        }
-      }
+      // function handleLoadJob(obj) {
+      //   if (active && (components !== null)) {
+      //     for (let attr in obj.job) {
+      //       model[attr] = obj.job[attr]
+      //     }
+      //   }
+      // }
 
-      watch(
-        () => model,
-        (model) => {
-          console.log("hello")
-        },
-        { deep: true}
-      )
+      // watch(
+      //   () => model,
+      //   (model) => {
+      //     console.log("hello")
+      //   },
+      //   { deep: true}
+      // )
 
-      function testHandle() {
-        console.log(JSON.stringify(model))
+      function handleComponentInput(event) {
+        setNestedComponentProperty(componentsModel.value.components, event.path, event.value)
       }
 
       return {
-        model,
-        components,
-        badPrintClientConfigurationFile,
+        componentsModel,
         clientHasControl,
         printClientChannel,
         active,
         handleSelectionUpdate,
         updatePrintClientChannel,
         updateControlStatus,
-        handleLoadJob,
-        testHandle
+        handleComponentInput
+        // handleLoadJob,
       }
     }
   }
