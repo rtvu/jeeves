@@ -81,7 +81,7 @@
     data () {
       return {
         path: "",
-        file: null,
+        file: "",
         modalShow: false,
         selectButtonDisabled: true,
         pathCrumb: "",

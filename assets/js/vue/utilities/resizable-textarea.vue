@@ -13,7 +13,7 @@
         return Object.assign({}, this.$listeners, {
           input: () => {
             this.$emit("input", event.target.value)
-
+            
             this.$el.style.height = "auto"
             this.$el.style.height = this.$el.scrollHeight + "px"
           }

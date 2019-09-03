@@ -1,5 +1,5 @@
 <template>
-  <form v-on:submit.prevent>
+  <form>
     <div class="row my-1">
       <div class="col-2">
         <tooltip-text-flex-button
@@ -13,15 +13,14 @@
         </tooltip-text-flex-button>
       </div>
       <div class="col">
-        <input
-          type="text"
+        <resizable-textarea
           class="form-control form-control-sm"
 
           :value="value"
-          @input="$emit('input', $event.target.value)"
 
           v-bind="$attrs"
-          v-on="listeners">
+          v-on="$listeners">
+        </resizable-textarea>
       </div>
     </div>
   </form>
@@ -29,6 +28,7 @@
 
 <script>
   import tooltipTextFlexButton from "../utilities/tooltip-text-flex-button"
+  import resizableTextarea from "../utilities/resizable-textarea"
 
   export default {
     inheritAttrs: false,
@@ -37,7 +37,8 @@
       value: String
     },
     components: {
-      "tooltip-text-flex-button": tooltipTextFlexButton
+      "tooltip-text-flex-button": tooltipTextFlexButton,
+      "resizable-textarea": resizableTextarea
     },
     data () {
       return {}
@@ -46,7 +47,7 @@
       listeners () {
         return Object.assign({}, this.$listeners, {
           input: () => {
-            this.$emit("input", event.target.value)
+            this.$emit('input', $event)
           }
         })
       }
