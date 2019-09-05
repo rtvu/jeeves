@@ -13,13 +13,22 @@
 
             @click="handleClick">
           </tooltip-text-flex-button>
-          <input type="text" class="form-control form-control-sm" readonly :value="description">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            readonly
+            :value="description">
         </div>
       </div>
     </div>
     <div class="row my-1" v-if="isSelected">
       <div class="col ml-3">
-        <client-components :components="components" :value="model" @input="handleInput($event)" :disabled="disabled"></client-components>
+        <client-components
+          :components="components"
+          :value="model"
+          @input="handleInput($event)"
+          :disabled="disabled">
+        </client-components>
       </div>
     </div>
   </div>
@@ -38,7 +47,12 @@
     props: {
       resource: String,
       description: String,
-      components: Array,
+      components: {
+        type: Array,
+        default: function () {
+          return []
+        }
+      },
       value: Object,
       selected: {
         type: Boolean,

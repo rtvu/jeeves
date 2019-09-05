@@ -1,5 +1,28 @@
+// function getValueTags() {
+//   return ["server-file-selector", "text-selector", "textarea-selector", "optional-value"]
+// }
+
+
 function getValueTags() {
-  return ["server-file-selector", "text-selector", "textarea-selector"];
+  return ["server-file-selector", "text-selector", "textarea-selector"]
+}
+
+
+function addOptionalValueComponent(components) {
+  let valueTags = getValueTags()
+
+  for (let component of components) {
+    if (!valueTags.includes(component.tag)) {
+      if (component.tag === "optional-selector") {
+        component.components.unshift({
+          tag: "optional-value",
+          model: "optional-value",
+          value: component.selected
+        })
+      }
+      addOptionalValueComponent(component.components)
+    }
+  }
 }
 
 function addValueProperty(components) {
@@ -20,52 +43,75 @@ function duplicateItem(item) {
   return JSON.parse(JSON.stringify(item))
 }
 
-function setNestedComponentProperty(components, path, value) {
-  let internalPath = duplicateItem(path)
+function setNestedComponentProperty(component, path, value) {
+  for (let i = 0; i < path.length; i++) {
+    component = component.components[path[i]]
+  }
+  component.value = value
 
-  if (internalPath.length !== 0) {
-    let model = internalPath.shift()
+  //
+  // let internalPath = duplicateItem(path)
+  //
+  // if (internalPath.length !== 0) {
+  //   let key = internalPath.pop()
+  //
+  //   for (let component of components) {
+  //     if (component.model === model) {
+  //       if (internalPath.length === 0) {
+  //         component.value = value
+  //         break
+  //       } else {
+  //         setNestedComponentProperty(component.components, internalPath, value)
+  //       }
+  //     }
+  //   }
+  // }
+}
 
-    for (let component of components) {
-      if (component.model === model) {
-        if (internalPath.length === 0) {
-          component.value = value
-          break
-        } else {
-          setNestedComponentProperty(component.components, internalPath, value)
-        }
-      }
+
+// Convert component specification to object
+function formatComponent(specification) {
+  let valueTags = getValueTags()
+  if (valueTags.includes(specification.tag)) {
+    if (!specification.hasOwnProperty("value")) {
+      specification.value = ""
+    }
+  } else {
+    let newComponents = {}
+    for (let i = 0; i < specification.components.length; i++) {
+      formatComponent(specification.components[i])
+      newComponents[i] = specification.components[i]
+    }
+    newComponents.length = specification.components.length
+    specification.components = newComponents
+  }
+  formatComponentSpecialCases(specification)
+}
+function formatComponentSpecialCases(specification) {
+  if (specification.tag === "optional-selector") {
+    specification.components.optionalSelector = {
+      tag: "optional-value",
+      model: "optional-value",
+      value: specification.selected
     }
   }
 }
 
-// function validComponents(components, model = []) {
-//   let componentLiterals = getComponentLiterals()
-//
-//   for (let component of components) {
-//     if (componentLiterals.includes(component.tag)) {
-//       // Handle component literals case
-//       if (!model.includes(component.model)) {
-//         // Handle when model is unique
-//         model.push(component.model)
-//       } else {
-//         // Handle when model is repeated
-//         return false
-//       }
-//     } else {
-//       // Handle nested components
-//       if (!validComponents(component.components, model)) {
-//         return false
-//       }
-//     }
-//   }
-//
-//   return true
-// }
+
+
+
+
+
+
+
+
+
 
 export {
   getValueTags,
+  addOptionalValueComponent,
   addValueProperty,
   duplicateItem,
-  setNestedComponentProperty
+  setNestedComponentProperty,
+  formatComponent
 };

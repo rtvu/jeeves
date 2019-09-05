@@ -8,17 +8,17 @@
               <server-file-text-requester
                 resource="PrintClient Configurations"
                 default-path="print_client_configurations/"
-                value="print_client_configurations/blah.json"
+                value="print_client_configurations/rock.json"
                 @selection-update="handleSelectionUpdate">
               </server-file-text-requester>
               <template v-if="componentsModel !== null">
-                <printer-connection
+                <!-- <printer-connection
                   @connection-update="updatePrintClientChannel"
                   @control-update="updateControlStatus">
-                </printer-connection>
+                </printer-connection> -->
                 <components-selector
                   :components="componentsModel.components"
-                  @input="handleComponentInput($event)"
+                  @component-update="handleComponentUpdate($event)"
                   :disabled="!active">
                 </components-selector>
               </template>
@@ -46,7 +46,7 @@
   import displayUsers from "./print-client/display-users"
   import requestManager from "./print-client/request-manager"
   import componentsSelector from "./print-client/components-selector"
-  import { addValueProperty, setNestedComponentProperty } from "./print-client/components-utilities"
+  import { formatComponent, setNestedComponentProperty } from "./print-client/components-utilities"
 
   export default {
     components: {
@@ -72,7 +72,7 @@
           try {
             let temp = JSON.parse(obj.text)
             let tempComponentsModel = temp.rootComponent
-            addValueProperty([tempComponentsModel])
+            formatComponent(tempComponentsModel)
 
             Vue.nextTick(() => {
               componentsModel.value = tempComponentsModel
@@ -83,19 +83,19 @@
         }
       }
 
-      function updatePrintClientChannel(obj) {
-        if (obj.event === "connected") {
-          printClientChannel.value = obj.printClientChannel
-        } else {
-          printClientChannel.value = null
-        }
-      }
-
-      function updateControlStatus(obj) {
-        if (obj.event === "control") {
-          clientHasControl.value = obj.hasControl
-        }
-      }
+      // function updatePrintClientChannel(obj) {
+      //   if (obj.event === "connected") {
+      //     printClientChannel.value = obj.printClientChannel
+      //   } else {
+      //     printClientChannel.value = null
+      //   }
+      // }
+      //
+      // function updateControlStatus(obj) {
+      //   if (obj.event === "control") {
+      //     clientHasControl.value = obj.hasControl
+      //   }
+      // }
 
       // function handleLoadJob(obj) {
       //   if (active && (components !== null)) {
@@ -113,8 +113,8 @@
       //   { deep: true}
       // )
 
-      function handleComponentInput(event) {
-        setNestedComponentProperty(componentsModel.value.components, event.path, event.value)
+      function handleComponentUpdate(object) {
+        setNestedComponentProperty(componentsModel.value, object.path, object.value)
       }
 
       return {
@@ -123,9 +123,9 @@
         printClientChannel,
         active,
         handleSelectionUpdate,
-        updatePrintClientChannel,
-        updateControlStatus,
-        handleComponentInput
+        // updatePrintClientChannel,
+        // updateControlStatus,
+        handleComponentUpdate
         // handleLoadJob,
       }
     }
