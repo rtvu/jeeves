@@ -1,77 +1,23 @@
-// function getValueTags() {
-//   return ["server-file-selector", "text-selector", "textarea-selector", "optional-value"]
-// }
-
-
 function getValueTags() {
   return ["server-file-selector", "text-selector", "textarea-selector"]
 }
+let valueTags = getValueTags()
 
-
-function addOptionalValueComponent(components) {
-  let valueTags = getValueTags()
-
-  for (let component of components) {
-    if (!valueTags.includes(component.tag)) {
-      if (component.tag === "optional-selector") {
-        component.components.unshift({
-          tag: "optional-value",
-          model: "optional-value",
-          value: component.selected
-        })
-      }
-      addOptionalValueComponent(component.components)
-    }
-  }
-}
-
-function addValueProperty(components) {
-  let valueTags = getValueTags()
-
-  for (let component of components) {
-    if (valueTags.includes(component.tag)) {
-      if(!component.hasOwnProperty("value")) {
-        component.value = ""
-      }
-    } else {
-      addValueProperty(component.components)
-    }
-  }
-}
 
 function duplicateItem(item) {
   return JSON.parse(JSON.stringify(item))
 }
+
 
 function setNestedComponentProperty(component, path, value) {
   for (let i = 0; i < path.length; i++) {
     component = component.components[path[i]]
   }
   component.value = value
-
-  //
-  // let internalPath = duplicateItem(path)
-  //
-  // if (internalPath.length !== 0) {
-  //   let key = internalPath.pop()
-  //
-  //   for (let component of components) {
-  //     if (component.model === model) {
-  //       if (internalPath.length === 0) {
-  //         component.value = value
-  //         break
-  //       } else {
-  //         setNestedComponentProperty(component.components, internalPath, value)
-  //       }
-  //     }
-  //   }
-  // }
 }
-
 
 // Convert component specification to object
 function formatComponent(specification) {
-  let valueTags = getValueTags()
   if (valueTags.includes(specification.tag)) {
     if (!specification.hasOwnProperty("value")) {
       specification.value = ""
@@ -97,20 +43,8 @@ function formatComponentSpecialCases(specification) {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
 export {
   getValueTags,
-  addOptionalValueComponent,
-  addValueProperty,
   duplicateItem,
   setNestedComponentProperty,
   formatComponent

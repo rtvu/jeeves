@@ -36,21 +36,19 @@
 </template>
 
 <script>
-  import Vue from "vue"
-  import { ref, reactive, watch } from "@vue/composition-api"
+  import { ref, watch } from "@vue/composition-api"
+  import optionalSelector from "./optional-selector"
   import serverFileSelector from "./server-file-selector"
   import textSelector from "./text-selector"
   import textareaSelector from "./textarea-selector"
-  import optionalSelector from "./optional-selector"
-  import  { getValueTags, duplicateItem } from "./components-utilities"
-
+  
   export default {
     name: "components-selector",
     components: {
+      "optional-selector": optionalSelector,
       "server-file-selector": serverFileSelector,
       "text-selector": textSelector,
-      "textarea-selector": textareaSelector,
-      "optional-selector": optionalSelector
+      "textarea-selector": textareaSelector
     },
     props: {
       components: {
@@ -73,8 +71,6 @@
         }
       )
 
-
-
       function handleValueInput(index, value) {
         context.emit('component-update', {path: [index], value: value})
       }
@@ -83,9 +79,6 @@
         object.path.unshift(index)
         context.emit('component-update', object)
       }
-
-
-
 
       return {
         componentsIndex,
