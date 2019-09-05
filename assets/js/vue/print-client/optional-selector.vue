@@ -21,42 +21,34 @@
         </div>
       </div>
     </div>
-    <div class="row my-1" v-if="isSelected">
+    <div class="row my-1" v-if="components.optionalSelector.value">
       <div class="col ml-3">
-        <client-components
+        <components-selector
           :components="components"
-          :value="model"
-          @input="handleInput($event)"
+          @component-update="handleComponentUpdate($event)"
           :disabled="disabled">
-        </client-components>
+        </components-selector>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import Vue from "vue"
-  import { reactive, ref, watch } from "@vue/composition-api"
   import tooltipTextFlexButton from "../utilities/tooltip-text-flex-button"
 
   export default {
     components: {
       "tooltip-text-flex-button": tooltipTextFlexButton,
-      "client-components": () => import("./client-components")
+      "components-selector": () => import("./components-selector")
     },
     props: {
       resource: String,
       description: String,
       components: {
-        type: Array,
+        type: Object,
         default: function () {
-          return []
+          return {}
         }
-      },
-      value: Object,
-      selected: {
-        type: Boolean,
-        default: false
       },
       disabled: {
         type: Boolean,
@@ -64,69 +56,19 @@
       }
     },
     setup(props, context) {
-      // 'isSelected' is internal copy of 'selected'
-      const isSelected = ref(props.selected)
-
-      // 'components.model' serve as keys for 'model'
-      let tempModel = {}
-      for (let i = 0; i < props.components.length; i++) {
-        tempModel[props.components[i].model] = ""
-      }
-      const model = reactive(tempModel)
-
-      // Collect keys into 'keys'
-      let keys = Object.keys(tempModel)
-
-      // Returns a new object with the same key/values as 'model'
-      function duplicate() {
-        let obj = {}
-
-        for (let i = 0; i < keys.length; i++) {
-          obj[keys[i]] = model[keys[i]]
-        }
-
-        return obj
-      }
-
-      // Clears 'model' values
-      function clear() {
-        for (let i = 0; i < keys.length; i++) {
-          model[keys[i]] = ""
-        }
-      }
-
-      // Handle input event
-      function handleInput(event) {
-        for (let i = 0; i < keys.length; i++) {
-          model[keys[i]] = event[keys[i]]
-        }
-      }
-
-      // Handle click event
       function handleClick() {
-        isSelected.value = !isSelected.value
-
-        if (!isSelected.value) {
-          Vue.nextTick(() => {
-            clear()
-          })
-        }
+        let path = ["optionalSelector"]
+        let value = !props.components.optionalSelector.value
+        context.emit('component-update', {path: path, value: value})
       }
 
-      // Emit to parent when 'model' is changed
-      watch(
-        () => model,
-        (model) => {
-          context.emit('input', duplicate())
-        },
-        { deep: true }
-      )
+      function handleComponentUpdate(object) {
+        context.emit('component-update', object)
+      }
 
       return {
-        isSelected,
-        model,
         handleClick,
-        handleInput
+        handleComponentUpdate
       }
     }
   }

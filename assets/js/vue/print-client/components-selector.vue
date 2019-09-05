@@ -23,15 +23,14 @@
         @input="handleValueInput(index, $event)"
         :disabled="disabled">
       </server-file-selector>
-      <!-- <optional-selector
-        v-if="component.tag === 'optional-selector'"
-        :resource="component.resource"
-        :description="component.description"
-        :components="component.components"
-        :selected="component.selected"
-        v-model="model[component.model]"
+      <optional-selector
+        v-if="components[index].tag === 'optional-selector'"
+        :resource="components[index].resource"
+        :description="components[index].description"
+        :components="components[index].components"
+        @component-update="handleComponentUpdate(index, $event)"
         :disabled="disabled">
-      </optional-selector> -->
+      </optional-selector>
     </template>
   </div>
 </template>
@@ -42,7 +41,7 @@
   import serverFileSelector from "./server-file-selector"
   import textSelector from "./text-selector"
   import textareaSelector from "./textarea-selector"
-  // import optionalSelector from "./optional-selector"
+  import optionalSelector from "./optional-selector"
   import  { getValueTags, duplicateItem } from "./components-utilities"
 
   export default {
@@ -51,7 +50,7 @@
       "server-file-selector": serverFileSelector,
       "text-selector": textSelector,
       "textarea-selector": textareaSelector,
-      // "optional-selector": optionalSelector
+      "optional-selector": optionalSelector
     },
     props: {
       components: {
@@ -74,20 +73,24 @@
         }
       )
 
-      
+
 
       function handleValueInput(index, value) {
         context.emit('component-update', {path: [index], value: value})
       }
 
-
+      function handleComponentUpdate(index, object) {
+        object.path.unshift(index)
+        context.emit('component-update', object)
+      }
 
 
 
 
       return {
         componentsIndex,
-        handleValueInput
+        handleValueInput,
+        handleComponentUpdate
       }
     }
   }

@@ -114,6 +114,7 @@
       // )
 
       function handleComponentUpdate(object) {
+        console.log(object)
         setNestedComponentProperty(componentsModel.value, object.path, object.value)
       }
 
