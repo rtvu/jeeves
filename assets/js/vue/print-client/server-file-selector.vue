@@ -1,26 +1,28 @@
 <template>
   <div>
-    <form>
-      <div class="row my-1">
-        <div class="col-2">
-          <tooltip-text-flex-button
-            button-class="btn btn-sm btn-dark btn-block"
-            button-style=""
+    <div class="row my-2">
+      <div class="col">
+        <div class="input-group">
+          <div class="input-group-prepend w-10">
+            <tooltip-text-flex-button
+              div-class="w-100"
+              button-class="btn btn-sm btn-dark btn-block"
+              button-style="border-top-right-radius: 0; border-bottom-right-radius: 0;"
 
-            :disabled="disabled"
-            :html="resource"
-            :title="resource"
-            @click="launchModal"
+              :disabled="disabled"
+              :html="resource"
+              :title="resource"
+              @click="launchModal"
 
-            v-bind="$attrs"
-            v-on="$listeners">
-          </tooltip-text-flex-button>
-        </div>
-        <div class="col">
+              v-bind="$attrs"
+              v-on="$listeners">
+            </tooltip-text-flex-button>
+          </div>
           <input type="text" class="form-control form-control-sm" readonly :value="file">
         </div>
       </div>
-    </form>
+    </div>
+
     <b-modal v-model="modalShow" :no-close-on-esc="true" :no-close-on-backdrop="true" :hide-header-close="true" :title="'Select ' + resource">
       <nav>
         <ol class="breadcrumb">

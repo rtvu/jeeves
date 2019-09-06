@@ -1,27 +1,27 @@
 <template>
-  <div>
-    <div class="row my-1">
-      <div class="col">
-        <div class="input-group">
+  <div class="row my-2">
+    <div class="col">
+      <div class="input-group">
+        <div class="input-group-prepend w-10">
           <tooltip-text-flex-button
-            div-class="input-group-prepend w-20"
+            div-class="w-100"
             button-class="btn btn-sm btn-outline-dark btn-block"
-            button-style=""
+            button-style="border-top-right-radius: 0; border-bottom-right-radius: 0;"
 
             disabled
 
             :html="resource"
             :title="resource">
           </tooltip-text-flex-button>
-          <resizable-textarea
-            class="form-control form-control-sm"
-
-            :value="value"
-
-            v-bind="$attrs"
-            v-on="$listeners">
-          </resizable-textarea>
         </div>
+        <resizable-textarea
+          class="form-control form-control-sm"
+
+          :value="value"
+
+          v-bind="$attrs"
+          v-on="$listeners">
+        </resizable-textarea>
       </div>
     </div>
   </div>
