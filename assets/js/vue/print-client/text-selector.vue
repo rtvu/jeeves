@@ -1,8 +1,8 @@
 <template>
   <div class="row my-2">
     <div class="col">
-      <div class="input-group">
-        <div class="input-group-prepend w-10">
+      <selector-group>
+        <template #selector-prepend>
           <tooltip-text-flex-button
             div-class="w-100"
             button-class="btn btn-sm btn-outline-dark btn-block"
@@ -13,22 +13,26 @@
             :html="resource"
             :title="resource">
           </tooltip-text-flex-button>
-        </div>
-        <input
-          type="text"
-          class="form-control form-control-sm"
+        </template>
+        <template #selector>
+          <input
+            type="text"
+            class="form-control form-control-sm"
 
-          :value="value"
+            :value="value"
 
-          v-bind="$attrs"
-          v-on="listeners">
-      </div>
+            v-bind="$attrs"
+            v-on="listeners">
+        </template>
+      </selector-group>
     </div>
   </div>
 </template>
 
 <script>
+  import { computed } from "@vue/composition-api"
   import tooltipTextFlexButton from "../utilities/tooltip-text-flex-button"
+  import selectorGroup from "../utilities/selector-group"
 
   export default {
     inheritAttrs: false,
@@ -37,18 +41,20 @@
       value: String
     },
     components: {
-      "tooltip-text-flex-button": tooltipTextFlexButton
+      "tooltip-text-flex-button": tooltipTextFlexButton,
+      "selector-group": selectorGroup
     },
-    data () {
-      return {}
-    },
-    computed: {
-      listeners () {
-        return Object.assign({}, this.$listeners, {
-          input: () => {
-            this.$emit("input", event.target.value)
+    setup(props, context) {
+      const listeners = computed(() => {
+        return Object.assign({}, context.parent.$listeners, {
+          input: (event) => {
+            context.emit("input", event.target.value)
           }
         })
+      })
+
+      return {
+        listeners
       }
     }
   }

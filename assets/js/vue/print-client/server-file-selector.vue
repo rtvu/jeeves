@@ -2,8 +2,8 @@
   <div>
     <div class="row my-2">
       <div class="col">
-        <div class="input-group">
-          <div class="input-group-prepend w-10">
+        <selector-group>
+          <template #selector-prepend>
             <tooltip-text-flex-button
               div-class="w-100"
               button-class="btn btn-sm btn-dark btn-block"
@@ -17,9 +17,15 @@
               v-bind="$attrs"
               v-on="$listeners">
             </tooltip-text-flex-button>
-          </div>
-          <input type="text" class="form-control form-control-sm" readonly :value="file">
-        </div>
+          </template>
+          <template #selector>
+            <input
+              type="text"
+              class="form-control form-control-sm"
+              readonly
+              :value="file">
+          </template>
+        </selector-group>
       </div>
     </div>
 
@@ -65,11 +71,13 @@
   import tooltipTextFlexButton from "../utilities/tooltip-text-flex-button"
   import getServerFileExplorerChannel from "../../get-server-file-explorer-channel"
   import pathHelper from "path"
+  import selectorGroup from "../utilities/selector-group"
 
   export default {
     inheritAttrs: false,
     components: {
-      "tooltip-text-flex-button": tooltipTextFlexButton
+      "tooltip-text-flex-button": tooltipTextFlexButton,
+      "selector-group": selectorGroup
     },
     props: {
       resource: String,
