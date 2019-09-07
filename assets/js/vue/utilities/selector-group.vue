@@ -2,8 +2,8 @@
   <div class="input-group" ref="container">
     <div
       class="input-group-prepend"
-      :class="widthClass"
-      :style="widthStyle">
+      :class="model.widthClass"
+      :style="model.widthStyle">
       <slot name="selector-prepend"></slot>
     </div>
     <slot name="selector"></slot>
@@ -13,53 +13,52 @@
 <script>
   import $ from "jquery"
   import Vue from "vue"
-  import { onMounted, onBeforeUnmount, ref, watch } from "@vue/composition-api"
+  import { onMounted, onBeforeUnmount, reactive, watch } from "@vue/composition-api"
 
   export default {
     setup(props, context) {
-      const windowWidth = ref(-1)
-      const widthClass = ref("")
-      const widthStyle = ref("")
+      const model = reactive({
+        windowWidth: -1,
+        widthClass: "",
+        widthStyle: ""
+      })
 
       onMounted(() => {
+        model.windowWidth = window.innerWidth
+
         Vue.nextTick(() => {
-          windowWidth.value = window.innerWidth
-
           window.addEventListener("resize", () => {
-            windowWidth.value = window.innerWidth
-          })
-
-          Vue.nextTick(() => {
-            watch(
-              windowWidth,
-              (windowWidth) => {
-                let containerWidth = $(context.refs.container).width()
-
-                if (containerWidth < 350) {
-                  widthClass.value = "w-100"
-                  widthStyle.value = ""
-                } else if (containerWidth < 725) {
-                  widthClass.value = ""
-                  widthStyle.value = "width: " + Math.floor(containerWidth * 0.3) + "px;"
-                } else {
-                  widthClass.value = ""
-                  widthStyle.value = "width: 217px;"
-                }
-              }
-            )
+            model.windowWidth = window.innerWidth
           })
         })
+
+        watch(
+          () => model.windowWidth,
+          (windowWidth) => {
+            let containerWidth = $(context.refs.container).width()
+
+            if (containerWidth < 350) {
+              model.widthClass = "w-100"
+              model.widthStyle = ""
+            } else if (containerWidth < 725) {
+              model.widthClass = ""
+              model.widthStyle = "width: " + Math.floor(containerWidth * 0.3) + "px;"
+            } else {
+              model.widthClass = ""
+              model.widthStyle = "width: 217px;"
+            }
+          }
+        )
       })
 
       onBeforeUnmount(() => {
         window.removeEventListener("resize", () => {
-          windowWidth.value = window.innerWidth
+          model.windowWidth = window.innerWidth
         })
       })
 
       return {
-        widthClass,
-        widthStyle
+        model
       }
     }
   }
