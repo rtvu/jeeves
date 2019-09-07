@@ -16,4 +16,6 @@ $dropdown-link-active-bg: $gray-100;
 
 @import "~bootstrap/scss/bootstrap";
 
+@import "~bootstrap-vue/src/index.scss";
+
 @import "auth_form";
