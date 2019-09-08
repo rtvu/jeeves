@@ -41,7 +41,7 @@
   import serverFileSelector from "./server-file-selector"
   import textSelector from "./text-selector"
   import textareaSelector from "./textarea-selector"
-  
+
   export default {
     name: "components-selector",
     components: {
@@ -63,18 +63,36 @@
       },
     },
     setup(props, context) {
+      //  Order is not guranteed when iterating through object keys.
+      //
+      //  'props.components' object contain numeric keys for children
+      //  that are to be rendered. 'props.components' object also contain the
+      //  key 'length' for the number of children components to be rendered.
+      //
+      //  'componentsIndex' is an array listing the numeric keys in
+      //  'props.components'.
       const componentsIndex = ref([])
       watch(
         () => props.components.length,
         (length) => {
+          //  [ ...Array(5).keys() ] --> [0, 1, 2, 3, 4]
           componentsIndex.value = [ ...Array(length).keys() ]
         }
       )
 
+      //  Constructs payload object:
+      //    - 'object.path' is an array containing indices to target.
+      //    - 'object.value' is value of target.
+      //  Emits event 'component-update' with payload object.
       function handleValueInput(index, value) {
         context.emit('component-update', {path: [index], value: value})
       }
 
+      //  Payload object contains:
+      //    - 'object.path' is an array containing indices to target.
+      //    - 'object.value' is value of target.
+      //  Updates 'object.path' with new index and then emits event
+      //  'component-update' with updated payload object.
       function handleComponentUpdate(index, object) {
         object.path.unshift(index)
         context.emit('component-update', object)

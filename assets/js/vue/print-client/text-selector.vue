@@ -45,6 +45,8 @@
       "selector-group": selectorGroup
     },
     setup(props, context) {
+      //  'listeners' contains listeners from 'context.parent.$listeners'
+      //  with modified 'input' callback.
       const listeners = computed(() => {
         return Object.assign({}, context.parent.$listeners, {
           input: (event) => {

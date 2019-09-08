@@ -27,14 +27,14 @@
     </div>
     <div class="row">
       <div class="col ml-4">
-        <hr class="text-secondary m-0" style="border-top: dashed 2px;" />
+        <hr class="text-secondary m-0" style="border-top: dashed 2px;">
       </div>
     </div>
-    <div class="row" v-if="components.optionalSelector.value">
+    <div class="row" v-if="components.optionalValue.value">
       <div class="col ml-4">
         <components-selector
           :components="components"
-          @component-update="handleComponentUpdate($event)"
+          @component-update="handleForwardComponentUpdate($event)"
           :disabled="disabled">
         </components-selector>
       </div>
@@ -67,19 +67,25 @@
       }
     },
     setup(props, context) {
+      //  Constructs payload object to set 'optional-value':
+      //    - 'object.path' is an array containing indices to target.
+      //    - 'object.value' is value of target.
+      //  Emits event 'component-update' with payload object.
       function handleClick() {
-        let path = ["optionalSelector"]
-        let value = !props.components.optionalSelector.value
+        let path = ["optionalValue"]
+        let value = !props.components.optionalValue.value
         context.emit('component-update', {path: path, value: value})
       }
 
-      function handleComponentUpdate(object) {
+      //  'optional-selector' does not need to modify payload. Emits event
+      //  'component-update' with payload object.
+      function handleForwardComponentUpdate(object) {
         context.emit('component-update', object)
       }
 
       return {
         handleClick,
-        handleComponentUpdate
+        handleForwardComponentUpdate
       }
     }
   }
