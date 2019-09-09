@@ -28,7 +28,7 @@ defmodule JeevesWeb.FileExplorerChannel do
   def handle_in("send-file-as-text", %{"path" => path}, socket) do
     full_path = "mount/" <> path
 
-    with  true = File.regular?(full_path),
+    with  true <- File.regular?(full_path),
           {:ok, body} <- File.read(full_path) do
             {:reply, {:ok, %{body: body}}, socket}
     else

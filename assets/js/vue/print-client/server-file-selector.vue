@@ -12,6 +12,7 @@
               :disabled="disabled"
               :html="resource"
               :title="resource"
+
               @click="launchModal"
 
               v-bind="$attrs"
@@ -23,35 +24,55 @@
               type="text"
               class="form-control form-control-sm"
               readonly
-              :value="file">
+
+              :value="model.selection">
           </template>
         </selector-group>
       </div>
     </div>
 
-    <b-modal v-model="modalShow" :no-close-on-esc="true" :no-close-on-backdrop="true" :hide-header-close="true" :title="'Select ' + resource">
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item" v-for="(crumb, index) in pathCrumb" v-if="pathCrumb.length != index + 1">
+    <b-modal
+      no-close-on-esc
+      no-close-on-backdrop
+      hide-header-close
+      size="lg"
+
+      v-model="model.modalShow"
+
+      :title="'Select ' + resource">
+      <nav class="p-1">
+        <ol class="breadcrumb m-0">
+          <li class="breadcrumb-item" v-for="(crumb, index) in model.modalPathCrumbHeads">
             <a href="#" @click="crumbClick(index); return false;">{{ crumb }}</a>
           </li>
-          <li class="breadcrumb-item active" v-for="(crumb, index) in pathCrumb" v-if="pathCrumb.length == index + 1">
-            {{ crumb }}
+          <li class="breadcrumb-item active">
+            {{ model.modalPathCrumbTail }}
           </li>
         </ol>
       </nav>
-      <div style="overflow-y:auto;max-height:50vh;">
-        <div class="input-group input-group-sm" v-for="folder in folders">
-          <div class="input-group-prepend">
-            <span class="input-group-text"><i class="far fa-folder fa-fw text-primary"></i></span>
-          </div>
-          <input type="text" :class="foldersListClass(folder)" readonly @click="clickFolder(folder)" @dblclick="doubleClickFolder(folder)" :value="folder" style="background-color:transparent;">
+
+      <div class="input-group input-group-sm p-1">
+        <div class="input-group-prepend">
+          <span class="input-group-text"><i class="fas fa-search fa-fw text-secondary"></i></span>
         </div>
-        <div class="input-group input-group-sm" v-for="file in files">
+        <input class="form-control" v-model="model.modalSearch" type="text" style="background-color: transparent;">
+        <div class="input-group-append">
+          <button class="btn btn-secondary" type="button" @click="clearSearchButton">Clear</button>
+        </div>
+      </div>
+
+      <div class="p-1" style="overflow-y: auto; max-height: 50vh;">
+        <div class="input-group input-group-sm" v-for="folder in showFolders">
+          <div class="input-group-prepend">
+            <span class="input-group-text"><i class="far fa-folder fa-fw text-info"></i></span>
+          </div>
+          <input type="text" :class="foldersListClass(folder)" readonly @click="clickFolder(folder)" @dblclick="doubleClickFolder(folder)" :value="folder" style="background-color: transparent;">
+        </div>
+        <div class="input-group input-group-sm" v-for="file in showFiles">
           <div class="input-group-prepend">
             <span class="input-group-text"><i class="far fa-file fa-fw text-success"></i></span>
           </div>
-          <input type="text" :class="filesListClass(file)" readonly @click="clickFile(file)" :value="file" style="background-color:transparent;">
+          <input type="text" :class="filesListClass(file)" readonly @click="clickFile(file)" :value="file" style="background-color: transparent;">
         </div>
       </div>
       <div slot="modal-footer" class="w-100">
@@ -60,7 +81,7 @@
         </div>
         <div class="float-right">
           <button type="button" class="btn btn-sm btn-secondary" @click="cancelModalButton">Cancel</button>
-          <button type="button" class="btn btn-sm btn-primary" @click="selectModalButton" :disabled="selectButtonDisabled">Select</button>
+          <button type="button" class="btn btn-sm btn-primary" @click="selectModalButton" :disabled="model.selectButtonDisabled">Select</button>
         </div>
       </div>
     </b-modal>
@@ -68,6 +89,7 @@
 </template>
 
 <script>
+  import { onMounted, reactive, watch, computed } from "@vue/composition-api"
   import tooltipTextFlexButton from "../utilities/tooltip-text-flex-button"
   import getServerFileExplorerChannel from "../../get-server-file-explorer-channel"
   import pathHelper from "path"
@@ -80,122 +102,219 @@
       "selector-group": selectorGroup
     },
     props: {
-      resource: String,
-      defaultPath: String,
-      value: String,
+      resource: {
+        type: String,
+        default: ""
+      },
+      defaultPath: {
+        type: String,
+        default: ""
+      },
+      value: {
+        type: String,
+        default: ""
+      },
+      type: {
+        type: String,
+        default: "files"
+      },
       disabled: {
         type: Boolean,
         default: false
-      },
+      }
     },
-    data () {
-      return {
+    setup(props, context) {
+      const model = reactive({
         path: "",
-        file: "",
-        modalShow: false,
+        selection: "",
         selectButtonDisabled: true,
-        pathCrumb: "",
-        files: "",
-        folders: "",
-        selectedItem: ""
-      }
-    },
-    watch: {
-      selectedItem (item) {
-        if (item.hasOwnProperty('file') && item.file != "" ) {
-          this.selectButtonDisabled = false;
-        } else {
-          this.selectButtonDisabled = true;
-        }
-      },
-      value (value) {
-        this.checkFileExists(value)
-      },
-      file (file) {
-        if (file == "") {
-          this.$emit("input", "")
-        } else {
-          this.$emit("input", this.path + this.file)
-        }
-      }
-    },
-    created () {
-      this.serverFileExplorerChannel = getServerFileExplorerChannel()
+        modalShow: false,
+        modalPathCrumbTail: "",
+        modalPathCrumbHeads: [],
+        modalFiles: "",
+        modalFolders: "",
+        modalSelectedItem: "",
+        modalSearch: ""
+      })
 
-      this.checkFileExists(this.value)
-    },
-    methods: {
-      checkFileExists (path) {
-        if (this.value != "") {
-          this.serverFileExplorerChannel.push("does-file-exist", { path: path })
-            .receive("ok", resp => {
-              if (resp.exists) {
-                this.path = pathHelper.dirname(path) + "/";
-                this.file = pathHelper.basename(path);
+      let serverFileExplorerChannel = getServerFileExplorerChannel()
+
+      const showFiles = computed(() => {
+        if (model.modalSearch === "") {
+          return model.modalFiles
+        } else {
+          return model.modalFiles.filter((file) => file.includes(model.modalSearch))
+        }
+      })
+
+      const showFolders = computed(() => {
+        if (model.modalSearch === "") {
+          return model.modalFolders
+        } else {
+          return model.modalFolders.filter((folder) => folder.includes(model.modalSearch))
+        }
+      })
+
+      function launchModal() {
+        model.modalShow = true
+        listPathContents(model.path)
+      }
+
+      function listPathContents(path) {
+        //  Clean up previous interaction
+        model.modalSelectedItem = ""
+        model.modalSearch = ""
+
+        serverFileExplorerChannel.push("list-path-contents", { path: path })
+          .receive("ok", response => {
+            path = "./" + path
+            let pathCrumb = path.replace(/\/+$/, "").split("/")
+            model.modalPathCrumbTail = pathCrumb.pop()
+            model.modalPathCrumbHeads = pathCrumb
+
+            model.modalFiles = response.files
+            model.modalFolders = response.folders
+          })
+      }
+
+      function checkPathExists(path, path_type) {
+        if (props.value !== "") {
+          let requestMap = {
+            files: "does-file-exist",
+            folders: "does-folder-exist",
+            both: "does-path-exist"
+          }
+          let request = requestMap[path_type]
+
+          serverFileExplorerChannel.push(request, { path: path })
+            .receive("ok", response => {
+              if (response.exists) {
+                model.path = pathHelper.dirname(path) + "/"
+                model.selection = pathHelper.basename(path)
               } else {
-                this.path = this.defaultPath;
-                this.file = "";
+                model.path = props.defaultPath
+                model.selection = ""
               }
-          })
+            }
+          )
         } else {
-          this.path = this.defaultPath;
-          this.file = "";
+          model.path = props.defaultPath
+          model.selection = ""
         }
-      },
-      launchModal () {
-        this.requestFolder(this.path)
-        this.modalShow = !this.modalShow
-      },
-      requestFolder (path) {
-        this.selectedItem = ""
+      }
 
-        this.serverFileExplorerChannel.push("list-path-contents", { path: path })
-          .receive("ok", resp => {
-            this.pathCrumb = path.replace(/\/+$/, "").split("/")
-            this.files = resp.files
-            this.folders = resp.folders
-          })
-      },
-      crumbClick (index) {
-        this.requestFolder(this.pathCrumb.slice(0, index + 1).join("/") + "/")
-      },
-      foldersListClass(folder) {
-        if (folder == this.selectedItem.folder) {
+      function crumbClick(index) {
+        if (index === 0) {
+          listPathContents("")
+        } else {
+          listPathContents(model.modalPathCrumbHeads.slice(1, index + 1).join("/") + "/")
+        }
+      }
+
+      function foldersListClass(folder) {
+        if (folder === model.modalSelectedItem.folder) {
           return ["form-control", "font-weight-bold", "text-primary"]
         } else {
           return ["form-control"]
         }
-      },
-      clickFolder (folder) {
-        this.selectedItem = {folder: folder}
-      },
-      doubleClickFolder (folder) {
-        this.requestFolder(this.pathCrumb.concat([folder]).join("/") + "/")
-      },
-      filesListClass(file) {
-        if (file == this.selectedItem.file) {
+      }
+
+      function clickFolder(folder) {
+        model.modalSelectedItem = {folder: folder}
+      }
+
+      function doubleClickFolder(folder) {
+        if (model.modalPathCrumbTail === ".") {
+          listPathContents(folder + "/")
+        } else {
+          listPathContents(model.modalPathCrumbHeads.slice(1).concat([model.modalPathCrumbTail, folder]).join("/") + "/")
+        }
+      }
+
+      function filesListClass(file) {
+        if (file === model.modalSelectedItem.file) {
           return ["form-control", "font-weight-bold", "text-primary"]
         } else {
           return ["form-control"]
         }
-      },
-      clickFile (file) {
-        this.selectedItem = {file: file}
-      },
-      clearModalButton () {
-        this.selectedItem = ""
-        this.file = ""
-        this.modalShow = false
-      },
-      cancelModalButton () {
-        this.selectedItem = ""
-        this.modalShow = false
-      },
-      selectModalButton () {
-        this.path = this.pathCrumb.join("/") + "/"
-        this.file = this.selectedItem.file
-        this.selectedItem = ""
-        this.modalShow = false
+      }
+
+      function clickFile(file) {
+        model.modalSelectedItem = {file: file}
+      }
+
+      function clearModalButton() {
+        model.path = props.defaultPath
+        model.selection = ""
+        model.modalShow = false
+      }
+
+      function cancelModalButton() {
+        model.modalShow = false
+      }
+
+      function selectModalButton() {
+        model.path = model.modalPathCrumbHeads.slice(1).concat([model.modalPathCrumbTail]).join("/") + "/"
+        model.selection = model.modalSelectedItem[Object.keys(model.modalSelectedItem)[0]]
+        model.modalShow = false
+      }
+
+      function clearSearchButton() {
+        model.modalSearch = ""
+      }
+
+      onMounted(() => {
+        checkPathExists(props.value, props.type)
+
+        watch(
+          () => props.value,
+          (value) => {
+            checkPathExists(value, props.type)
+          }
+        )
+
+        watch(
+          () => model.modalSelectedItem,
+          (item) => {
+            if (item === "") {
+              model.selectButtonDisabled = true
+            } else if ((props.type === "files") && item.hasOwnProperty("folder")) {
+              model.selectButtonDisabled = true
+            } else {
+              model.selectButtonDisabled = false
+            }
+          }
+        )
+
+        watch(
+          () => model.selection,
+          (selection) => {
+            if (selection === "") {
+              context.emit("input", "")
+            } else {
+              context.emit("input", model.path + model.selection)
+            }
+          }
+        )
+      })
+
+      return {
+        model,
+        showFiles,
+        showFolders,
+        checkPathExists,
+        launchModal,
+        listPathContents,
+        crumbClick,
+        foldersListClass,
+        clickFolder,
+        doubleClickFolder,
+        filesListClass,
+        clickFile,
+        clearModalButton,
+        cancelModalButton,
+        selectModalButton,
+        clearSearchButton
       }
     }
   }

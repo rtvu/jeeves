@@ -67,7 +67,7 @@
                 context.emit('input', path)
               })
           }
-        },
+        }
       )
 
       return {

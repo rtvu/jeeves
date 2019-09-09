@@ -8,7 +8,7 @@
               <server-file-text-requester
                 resource="PrintClient Configurations"
                 default-path="print_client_configurations/"
-                value="print_client_configurations/rock.json"
+                value="print_client_configurations/rock2.json"
                 @selection-update="handleSelectionUpdate">
               </server-file-text-requester>
               <template v-if="componentsModel !== null">
