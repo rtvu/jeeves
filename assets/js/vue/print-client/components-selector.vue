@@ -15,14 +15,15 @@
         @input="handleValueInput(index, $event)"
         :disabled="disabled">
       </text-selector>
-      <server-file-selector
-        v-if="components[index].tag === 'server-file-selector'"
+      <server-path-selector
+        v-if="components[index].tag === 'server-path-selector'"
+        :type="components[index].type"
         :resource="components[index].resource"
         :default-path="components[index].defaultPath"
         :value="components[index].value"
         @input="handleValueInput(index, $event)"
         :disabled="disabled">
-      </server-file-selector>
+      </server-path-selector>
       <optional-selector
         v-if="components[index].tag === 'optional-selector'"
         :resource="components[index].resource"
@@ -38,7 +39,7 @@
 <script>
   import { ref, watch } from "@vue/composition-api"
   import optionalSelector from "./optional-selector"
-  import serverFileSelector from "./server-file-selector"
+  import serverFileSelector from "./server-path-selector"
   import textSelector from "./text-selector"
   import textareaSelector from "./textarea-selector"
 
@@ -46,7 +47,7 @@
     name: "components-selector",
     components: {
       "optional-selector": optionalSelector,
-      "server-file-selector": serverFileSelector,
+      "server-path-selector": serverFileSelector,
       "text-selector": textSelector,
       "textarea-selector": textareaSelector
     },

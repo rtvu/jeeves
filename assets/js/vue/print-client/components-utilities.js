@@ -1,7 +1,7 @@
 //  Returns an array containing tags of renderable component objects that have
 //  'value' property.
 function getValueTags() {
-  return ["server-file-selector", "text-selector", "textarea-selector"]
+  return ["server-path-selector", "text-selector", "textarea-selector"]
 }
 //  Local copy for module.
 let valueTags = getValueTags()

@@ -1,5 +1,7 @@
 <template>
-    <server-file-selector
+    <server-path-selector
+      type="files"
+
       :resource="resource"
       :default-path="defaultPath"
 
@@ -7,13 +9,13 @@
       @input="handleInput($event)"
 
       :disabled="disabled">
-    </server-file-selector>
+    </server-path-selector>
 </template>
 
 <script>
   import { ref, watch } from "@vue/composition-api"
   import getServerFileExplorerChannel from "../../get-server-file-explorer-channel"
-  import serverFileSelector from "./server-file-selector"
+  import serverPathSelector from "./server-path-selector"
 
   export default {
     props: {
@@ -29,7 +31,7 @@
       },
     },
     components: {
-      "server-file-selector": serverFileSelector,
+      "server-path-selector": serverPathSelector,
     },
     setup(props, context) {
       const path = ref(props.value)
