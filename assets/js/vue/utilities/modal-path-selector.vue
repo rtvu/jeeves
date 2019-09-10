@@ -5,19 +5,19 @@
     hide-header-close
     size="lg"
 
-    :value="show"
+    :visible="show"
 
     :title="'Select ' + resource">
 
     <nav class="p-1">
       <ol class="breadcrumb m-0">
-        <li class="breadcrumb-item" v-for="(crumb, index) in model.pathCrumbHeads">
+        <li class="breadcrumb-item" v-for="(crumb, index) in pathCrumbHeads">
           <a href="#" @click="handleCrumbClick(index); return false;">
             {{ crumb }}
           </a>
         </li>
         <li class="breadcrumb-item active">
-          {{ model.pathCrumbTail }}
+          {{ pathCrumbTail }}
         </li>
       </ol>
     </nav>
@@ -39,6 +39,7 @@
         </div>
         <input type="text" :class="foldersListClass(folder)" readonly @click="handleFolderClick(folder)" @dblclick="handleFolderDoubleClick(folder)" :value="folder" style="background-color: transparent;">
       </div>
+
       <div class="input-group input-group-sm" v-for="file in showFiles">
         <div class="input-group-prepend">
           <span class="input-group-text"><i class="far fa-file fa-fw text-success"></i></span>
@@ -46,6 +47,7 @@
         <input type="text" :class="filesListClass(file)" readonly @click="handleFileClick(file)" :value="file" style="background-color: transparent;">
       </div>
     </div>
+
     <template #modal-footer>
       <div class="w-100">
         <div class="float-left">
@@ -56,7 +58,7 @@
           <button type="button" class="btn btn-sm btn-primary" @click="handleSelectFooterClick" :disabled="model.selectFooterButtonDisabled">Select</button>
         </div>
       </div>
-    <template>
+    </template>
   </b-modal>
 </template>
 
@@ -95,7 +97,10 @@
       },
       type: {
         type: String,
-        default: "files"
+        default: "files",
+        validator: function(value) {
+          return (["files", "folders", "both"].indexOf(value) !== -1)
+        }
       },
     },
     setup(props, context) {
@@ -114,10 +119,14 @@
       })
 
       const showFiles = computed(() => {
-        if (model.search === "") {
-          return props.files
+        if (props.type === "folders") {
+          return []
         } else {
-          return props.files.filter((file) => file.includes(model.search))
+          if (model.search === "") {
+            return props.files
+          } else {
+            return props.files.filter(file => file.includes(model.search))
+          }
         }
       })
 
@@ -125,7 +134,7 @@
         if (model.search === "") {
           return props.folders
         } else {
-          return props.folders.filter((folder) => folder.includes(model.search))
+          return props.folders.filter(folder => folder.includes(model.search))
         }
       })
 
@@ -133,7 +142,11 @@
         () => props.show,
         (show) => {
           if (show) {
-            model.selectedItem = props.selection
+            if (props.selection.slice(-1) === "/") {
+              model.selectedItem = { folder: props.selection.slice(0, -1) }
+            } else {
+              model.selectedItem = { file: props.selection }
+            }
           }
         }
       )
@@ -190,7 +203,7 @@
         if (index === 0) {
           emitListPathContents("")
         } else {
-          emitListPathContents(model.pathCrumbHeads.slice(1, index + 1).join("/") + "/")
+          emitListPathContents(pathCrumbHeads.value.slice(1, index + 1).join("/") + "/")
         }
       }
 
@@ -202,10 +215,10 @@
         clearSearch()
         clearSelectedItem()
 
-        if (model.pathCrumbTail === ".") {
+        if (pathCrumbTail.value === ".") {
           emitListPathContents(folder + "/")
         } else {
-          emitListPathContents(model.pathCrumbHeads.slice(1).concat([model.pathCrumbTail, folder]).join("/") + "/")
+          emitListPathContents(pathCrumbHeads.value.slice(1).concat([pathCrumbTail.value, folder]).join("/") + "/")
         }
       }
 
@@ -219,19 +232,25 @@
       }
 
       function handleCancelFooterClick() {
-        context.emit("cancel")
         context.emit("close")
       }
 
       function handleSelectFooterClick() {
-        let path = model.pathCrumbHeads.slice(1).concat([model.pathCrumbTail]).join("/") + "/"
-        let selection = model.selectedItem[Object.keys(model.modalSelectedItem)[0]]
+        let path = pathCrumbHeads.value.slice(1).concat([pathCrumbTail]).join("/") + "/"
+
+        let selection = model.selectedItem[Object.keys(model.selectedItem)[0]]
+        if (Object.keys(model.selectedItem)[0] === "folder") {
+          selection += "/"
+        }
+
         context.emit("select", {path: path, selection: selection})
         context.emit("close")
       }
 
       return {
         model,
+        pathCrumbHeads,
+        pathCrumbTail,
         showFiles,
         showFolders,
         foldersListClass,
@@ -242,6 +261,7 @@
         handleFolderDoubleClick,
         handleFileClick,
         handleClearFooterClick,
+        handleCancelFooterClick,
         handleFolderDoubleClick,
         handleSelectFooterClick
       }

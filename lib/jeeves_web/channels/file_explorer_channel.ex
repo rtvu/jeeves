@@ -25,6 +25,13 @@ defmodule JeevesWeb.FileExplorerChannel do
     {:reply, {:ok, %{exists: exists}}, socket}
   end
 
+  def handle_in("does-folder-exist", %{"path" => path}, socket) do
+    full_path = "mount/" <> path
+    exists = File.dir?(full_path)
+
+    {:reply, {:ok, %{exists: exists}}, socket}
+  end
+
   def handle_in("send-file-as-text", %{"path" => path}, socket) do
     full_path = "mount/" <> path
 

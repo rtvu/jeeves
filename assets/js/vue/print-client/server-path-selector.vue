@@ -53,12 +53,18 @@
       :selection="model.selection"
       :files="model.modalFiles"
       :folders="model.modalFolders"
-      :type="type">
+      :type="type"
+
+      @list-path-contents="handleListPathContents($event)"
+      @clear="handleClear()"
+      @close="handleClose()"
+      @select="handleSelect($event)">
     </modal-path-selector>
   </div>
 </template>
 
 <script>
+  import Vue from "vue"
   import { onMounted, reactive, watch, computed } from "@vue/composition-api"
   import tooltipTextFlexButton from "../utilities/tooltip-text-flex-button"
   import getServerFileExplorerChannel from "../../get-server-file-explorer-channel"
@@ -88,7 +94,10 @@
       },
       type: {
         type: String,
-        default: "files"
+        default: "files",
+        validator: function(value) {
+          return (["files", "folders", "both"].indexOf(value) !== -1)
+        }
       },
       disabled: {
         type: Boolean,
@@ -101,110 +110,109 @@
         selection: "",
         modalShow: false,
         modalFiles: [],
-        modalFolders: [],
+        modalFolders: []
       })
 
       let serverFileExplorerChannel = getServerFileExplorerChannel()
 
-      function handleLaunchModalClick() {
-        model.modalShow = true
-      }
-
       function listPathContents(path) {
         serverFileExplorerChannel.push("list-path-contents", { path: path })
           .receive("ok", response => {
-            model.modalFiles = response.files
+            if (props.type === "folders") {
+              model.modalFiles = []
+            } else {
+              model.modalFiles = response.files
+            }
+
             model.modalFolders = response.folders
           })
       }
 
-      function checkPathExists(path, path_type) {
-        if (props.value !== "") {
-          let requestMap = {
-            files: "does-file-exist",
-            folders: "does-folder-exist",
-            both: "does-path-exist"
-          }
-          let request = requestMap[path_type]
+      function handleLaunchModalClick() {
+        listPathContents(model.path)
+        model.modalShow = true
+      }
 
-          serverFileExplorerChannel.push(request, { path: path })
+      function checkValuePathExists() {
+        let value = props.value.replace(/\/+$/, "/")
+
+        let isValueEmpty = (value === "")
+        let isValueFoldersClash = ((props.type === "folders") && (value.slice(-1) !== "/"))
+        let isValueFilesClash = ((props.type === "files") && (value.slice(-1) === "/"))
+
+        if (isValueEmpty || isValueFoldersClash || isValueFilesClash) {
+          model.path = props.defaultPath
+          model.selection = ""
+        } else {
+          let request = ""
+          if (value.slice(-1) === "/") {
+            request = "does-folder-exist"
+          } else {
+            request = "does-file-exist"
+          }
+
+          serverFileExplorerChannel.push(request, { path: value })
             .receive("ok", response => {
               if (response.exists) {
-                model.path = pathHelper.dirname(path) + "/"
-                model.selection = pathHelper.basename(path)
+                model.path = pathHelper.dirname(value) + "/"
+
+                model.selection = pathHelper.basename(value)
+                if (request === "does-folder-exist") {
+                  model.selection += "/"
+                }
               } else {
                 model.path = props.defaultPath
                 model.selection = ""
               }
             }
           )
-        } else {
-          model.path = props.defaultPath
-          model.selection = ""
         }
       }
 
-
-
       onMounted(() => {
-        checkPathExists(props.value, props.type)
+        checkValuePathExists()
 
         watch(
           () => props.value,
           (value) => {
-            checkPathExists(value, props.type)
-          }
-        )
-
-        watch(
-          () => model.modalSelectedItem,
-          (item) => {
-            if (item === "") {
-              model.selectButtonDisabled = true
-            } else if ((props.type === "files") && item.hasOwnProperty("folder")) {
-              model.selectButtonDisabled = true
-            } else {
-              model.selectButtonDisabled = false
-            }
-          }
-        )
-
-        watch(
-          () => model.selection,
-          (selection) => {
-            if (selection === "") {
-              context.emit("input", "")
-            } else {
-              context.emit("input", model.path + model.selection)
+            console.log("hello")
+            console.log("value" + props.value)
+            console.log("ps: "+model.path + model.selection)
+            if (props.value !== model.path + model.selection) {
+              checkValuePathExists()
             }
           }
         )
       })
 
+      function handleListPathContents(path) {
+        listPathContents(path)
+      }
+
+      function handleClear() {
+        model.path = ""
+        model.selection = ""
+      }
+
+      function handleClose() {
+        model.modalShow = false
+      }
+
+      function handleSelect(object) {
+        model.path = object.path
+        model.selection = object.selection
+      }
+
+
       return {
         model,
         handleLaunchModalClick,
+        checkValuePathExists,
 
-
-
-
-
-
-        showFiles,
-        showFolders,
-        checkPathExists,
-
-        listPathContents,
-        crumbClick,
-        foldersListClass,
-        clickFolder,
-        doubleClickFolder,
-        filesListClass,
-        clickFile,
-        clearModalButton,
-        cancelModalButton,
-        selectModalButton,
-        clearSearchButton
+        handleListPathContents,
+        handleClear,
+        handleClose,
+        handleSelect
       }
     }
   }
