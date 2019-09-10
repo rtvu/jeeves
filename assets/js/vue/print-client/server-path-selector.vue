@@ -47,7 +47,7 @@
       @select="handleSelect($event)">
     </modal-path-selector> -->
     <modal-path-selector
-      :show="model.modalShow"
+      v-model="model.modalShow"
       :resource="resource"
       :path="model.path"
       :selection="model.selection"
@@ -57,7 +57,6 @@
 
       @list-path-contents="handleListPathContents($event)"
       @clear="handleClear()"
-      @close="handleClose()"
       @select="handleSelect($event)">
     </modal-path-selector>
   </div>
@@ -194,9 +193,7 @@
         model.selection = ""
       }
 
-      function handleClose() {
-        model.modalShow = false
-      }
+
 
       function handleSelect(object) {
         model.path = object.path
@@ -211,7 +208,6 @@
 
         handleListPathContents,
         handleClear,
-        handleClose,
         handleSelect
       }
     }

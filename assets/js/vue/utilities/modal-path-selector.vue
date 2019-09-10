@@ -11,13 +11,13 @@
 
     <nav class="p-1">
       <ol class="breadcrumb m-0">
-        <li class="breadcrumb-item" v-for="(crumb, index) in pathCrumbHeads">
+        <li class="breadcrumb-item" v-for="(crumb, index) in model.pathCrumbHeads">
           <a href="#" @click="handleCrumbClick(index); return false;">
             {{ crumb }}
           </a>
         </li>
         <li class="breadcrumb-item active">
-          {{ pathCrumbTail }}
+          {{ model.pathCrumbTail }}
         </li>
       </ol>
     </nav>
@@ -65,7 +65,19 @@
 <script>
   import { reactive, watch, computed } from "@vue/composition-api"
 
+  function filter(array, search) {
+    if (search === "") {
+      return array
+    } else {
+      return array.filter(item => item.includes(search))
+    }
+  }
+
   export default {
+    model: {
+      prop: "show",
+      event: "change"
+    },
     props: {
       resource: {
         type: String,
@@ -107,36 +119,35 @@
       const model = reactive({
         search: "",
         selectFooterButtonDisabled: true,
-        selectedItem: ""
+        selectedItem: "",
+        pathCrumbTail,
+        pathCrumbHeads
       })
 
-      const pathCrumbHeads = computed(() => {
-        return ("./" + props.path).replace(/\/+$/, "").split("/").slice(0, -1)
-      })
-
-      const pathCrumbTail = computed(() => {
-        return ("./" + props.path).replace(/\/+$/, "").split("/").pop()
-      })
-
+      // Array
       const showFiles = computed(() => {
         if (props.type === "folders") {
           return []
         } else {
-          if (model.search === "") {
-            return props.files
-          } else {
-            return props.files.filter(file => file.includes(model.search))
-          }
+          return filter(props.files, model.search)
         }
       })
 
       const showFolders = computed(() => {
-        if (model.search === "") {
-          return props.folders
-        } else {
-          return props.folders.filter(folder => folder.includes(model.search))
-        }
+        return filter(props.folders, model.search)
       })
+
+      watch(
+        () => props.path,
+        (path) => {
+          // ("./" + path) ==> add "." to path
+          // replace(/\/+$/, "") ==> remove ending "/"
+          // split("/") ==> split by "/"
+          let partitionedPath = ("./" + path).replace(/\/+$/, "").split("/")
+          model.pathCrumbTail = partitionedPath.pop()
+          model.pathCrumbHeads = partitionedPath
+        }
+      )
 
       watch(
         () => props.show,
@@ -153,10 +164,10 @@
 
       watch(
         () => model.selectedItem,
-        (selectedItem) => {
-          if (selectedItem === "") {
+        (item) => {
+          if (item === "") {
             model.selectFooterButtonDisabled = true
-          } else if ((props.type === "files") && selectedItem.hasOwnProperty("folder")) {
+          } else if ((props.type === "files") && item.hasOwnProperty("folder")) {
             model.selectFooterButtonDisabled = true
           } else {
             model.selectFooterButtonDisabled = false
@@ -188,6 +199,10 @@
         model.search = ""
       }
 
+      function closeModal() {
+        context.emit("change", false)
+      }
+
       function clearSelectedItem() {
         model.selectedItem = ""
       }
@@ -203,7 +218,7 @@
         if (index === 0) {
           emitListPathContents("")
         } else {
-          emitListPathContents(pathCrumbHeads.value.slice(1, index + 1).join("/") + "/")
+          emitListPathContents(model.pathCrumbHeads.slice(1, index + 1).join("/") + "/")
         }
       }
 
@@ -215,10 +230,10 @@
         clearSearch()
         clearSelectedItem()
 
-        if (pathCrumbTail.value === ".") {
+        if (model.pathCrumbTail === ".") {
           emitListPathContents(folder + "/")
         } else {
-          emitListPathContents(pathCrumbHeads.value.slice(1).concat([pathCrumbTail.value, folder]).join("/") + "/")
+          emitListPathContents(model.pathCrumbHeads.slice(1).concat([model.pathCrumbTail, folder]).join("/") + "/")
         }
       }
 
@@ -228,15 +243,15 @@
 
       function handleClearFooterClick() {
         context.emit("clear")
-        context.emit("close")
+        closeModal()
       }
 
       function handleCancelFooterClick() {
-        context.emit("close")
+        closeModal()
       }
 
       function handleSelectFooterClick() {
-        let path = pathCrumbHeads.value.slice(1).concat([pathCrumbTail]).join("/") + "/"
+        let path = model.pathCrumbHeads.slice(1).concat([model.pathCrumbTail]).join("/") + "/"
 
         let selection = model.selectedItem[Object.keys(model.selectedItem)[0]]
         if (Object.keys(model.selectedItem)[0] === "folder") {
@@ -244,13 +259,11 @@
         }
 
         context.emit("select", {path: path, selection: selection})
-        context.emit("close")
+        closeModal()
       }
 
       return {
         model,
-        pathCrumbHeads,
-        pathCrumbTail,
         showFiles,
         showFolders,
         foldersListClass,
