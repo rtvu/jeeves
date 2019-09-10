@@ -28,7 +28,7 @@
       </div>
       <input class="form-control" v-model="model.search" type="text" style="background-color: transparent;">
       <div class="input-group-append">
-        <button class="btn btn-secondary" type="button" @click="handleClearSearchButton">Clear</button>
+        <button class="btn btn-secondary" type="button" @click="handleClearSearchClick">Clear</button>
       </div>
     </div>
 
@@ -61,7 +61,7 @@
 </template>
 
 <script>
-  import { onMounted, reactive, watch, computed } from "@vue/composition-api"
+  import { reactive, watch, computed } from "@vue/composition-api"
 
   export default {
     props: {
@@ -138,6 +138,19 @@
         }
       )
 
+      watch(
+        () => model.selectedItem,
+        (selectedItem) => {
+          if (selectedItem === "") {
+            model.selectFooterButtonDisabled = true
+          } else if ((props.type === "files") && selectedItem.hasOwnProperty("folder")) {
+            model.selectFooterButtonDisabled = true
+          } else {
+            model.selectFooterButtonDisabled = false
+          }
+        }
+      )
+
       function foldersListClass(folder) {
         if (folder === model.selectedItem.folder) {
           return ["form-control", "font-weight-bold", "text-primary"]
@@ -147,103 +160,90 @@
       }
 
       function filesListClass(file) {
-        if (file === model.modalSelectedItem.file) {
+        if (file === model.selectedItem.file) {
           return ["form-control", "font-weight-bold", "text-primary"]
         } else {
           return ["form-control"]
         }
       }
 
-
-
-
-
-      // TODO: need to refactor out listPathContents
-      function crumbClick(index) {
-        if (index === 0) {
-          listPathContents("")
-        } else {
-          listPathContents(model.modalPathCrumbHeads.slice(1, index + 1).join("/") + "/")
-        }
+      function emitListPathContents(path) {
+        context.emit("list-path-contents", path)
       }
 
-
-
-      function clickFolder(folder) {
-        model.modalSelectedItem = {folder: folder}
-      }
-
-
-      // TODO: need to refactor out listPathContents
-      function doubleClickFolder(folder) {
-        if (model.modalPathCrumbTail === ".") {
-          listPathContents(folder + "/")
-        } else {
-          listPathContents(model.modalPathCrumbHeads.slice(1).concat([model.modalPathCrumbTail, folder]).join("/") + "/")
-        }
-      }
-
-
-
-      function clickFile(file) {
-        model.modalSelectedItem = {file: file}
-      }
-
-      function clearModalButton() {
-        model.path = props.defaultPath
-        model.selection = ""
-        model.modalShow = false
-      }
-
-      function cancelModalButton() {
-        model.modalShow = false
-      }
-
-      function selectModalButton() {
-        model.path = model.modalPathCrumbHeads.slice(1).concat([model.modalPathCrumbTail]).join("/") + "/"
-        model.selection = model.modalSelectedItem[Object.keys(model.modalSelectedItem)[0]]
-        model.modalShow = false
-      }
-
-      function clearSearchButton() {
+      function clearSearch() {
         model.search = ""
       }
 
-      onMounted(() => {
+      function clearSelectedItem() {
+        model.selectedItem = ""
+      }
 
+      function handleClearSearchClick() {
+        clearSearch()
+      }
 
+      function handleCrumbClick(index) {
+        clearSearch()
+        clearSelectedItem()
 
+        if (index === 0) {
+          emitListPathContents("")
+        } else {
+          emitListPathContents(model.pathCrumbHeads.slice(1, index + 1).join("/") + "/")
+        }
+      }
 
-        watch(
-          () => model.modalSelectedItem,
-          (item) => {
-            if (item === "") {
-              model.selectFooterButtonDisabled = true
-            } else if ((props.type === "files") && item.hasOwnProperty("folder")) {
-              model.selectFooterButtonDisabled = true
-            } else {
-              model.selectFooterButtonDisabled = false
-            }
-          }
-        )
-      })
+      function handleFolderClick(folder) {
+        model.selectedItem = {folder: folder}
+      }
+
+      function handleFolderDoubleClick(folder) {
+        clearSearch()
+        clearSelectedItem()
+
+        if (model.pathCrumbTail === ".") {
+          emitListPathContents(folder + "/")
+        } else {
+          emitListPathContents(model.pathCrumbHeads.slice(1).concat([model.pathCrumbTail, folder]).join("/") + "/")
+        }
+      }
+
+      function handleFileClick(file) {
+        model.selectedItem = {file: file}
+      }
+
+      function handleClearFooterClick() {
+        context.emit("clear")
+        context.emit("close")
+      }
+
+      function handleCancelFooterClick() {
+        context.emit("cancel")
+        context.emit("close")
+      }
+
+      function handleSelectFooterClick() {
+        let path = model.pathCrumbHeads.slice(1).concat([model.pathCrumbTail]).join("/") + "/"
+        let selection = model.selectedItem[Object.keys(model.modalSelectedItem)[0]]
+        context.emit("select", {path: path, selection: selection})
+        context.emit("close")
+      }
 
       return {
         model,
         showFiles,
         showFolders,
-
-
-        crumbClick,
         foldersListClass,
-        clickFolder,
-        doubleClickFolder,
         filesListClass,
-        clickFile,
-        clearModalButton,
-        cancelModalButton,
-        selectModalButton,
-        clearSearchButton
+        handleClearSearchClick,
+        handleCrumbClick,
+        handleFolderClick,
+        handleFolderDoubleClick,
+        handleFileClick,
+        handleClearFooterClick,
+        handleFolderDoubleClick,
+        handleSelectFooterClick
       }
     }
   }
