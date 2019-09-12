@@ -130,12 +130,12 @@
           })
       }
 
-
       //  Initializes and triggers modal.
       function handleLaunchModalClick() {
         listPathContents(model.path)
         model.modalShow = true
       }
+
 
       function checkValuePathExists() {
         let value = props.value.replace(/\/+$/, "/")
