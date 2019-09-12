@@ -65,7 +65,7 @@
 <script>
   import { reactive, watch, computed } from "@vue/composition-api"
 
-  function filter(array, search) {
+  function searchFilter(array, search) {
     if (search === "") {
       return array
     } else {
@@ -120,40 +120,46 @@
         search: "",
         selectFooterButtonDisabled: true,
         selectedItem: "",
-        pathCrumbTail,
-        pathCrumbHeads
+        pathCrumbTail: "",
+        pathCrumbHeads: []
       })
 
-      // Array
+      //  Array for folders to show.
+      const showFolders = computed(() => {
+        return searchFilter(props.folders, model.search)
+      })
+
+      //  Array for files to show.
       const showFiles = computed(() => {
         if (props.type === "folders") {
           return []
         } else {
-          return filter(props.files, model.search)
+          return searchFilter(props.files, model.search)
         }
       })
 
-      const showFolders = computed(() => {
-        return filter(props.folders, model.search)
-      })
-
+      //  'pathCrumbTail' and 'pathCrumbHeads' are depedent on 'props.path'
       watch(
         () => props.path,
         (path) => {
-          // ("./" + path) ==> add "." to path
-          // replace(/\/+$/, "") ==> remove ending "/"
-          // split("/") ==> split by "/"
+          //  ("./" + path) ==> add "." to path
+          //  replace(/\/+$/, "") ==> remove ending "/"
+          //  split("/") ==> split by "/"
           let partitionedPath = ("./" + path).replace(/\/+$/, "").split("/")
           model.pathCrumbTail = partitionedPath.pop()
           model.pathCrumbHeads = partitionedPath
         }
       )
 
+      //  'model.selectedItem' gets reinitialized whenever 'props.show'
+      //  turns 'true'.
       watch(
         () => props.show,
         (show) => {
           if (show) {
-            if (props.selection.slice(-1) === "/") {
+            if (props.selection === "") {
+              model.selectedItem = ""
+            } else if (props.selection.slice(-1) === "/") {
               model.selectedItem = { folder: props.selection.slice(0, -1) }
             } else {
               model.selectedItem = { file: props.selection }
@@ -162,6 +168,8 @@
         }
       )
 
+      //  'model.selectedItem' change triggers setting state for
+      //  'model.selectFooterButtonDisabled'.
       watch(
         () => model.selectedItem,
         (item) => {
@@ -175,6 +183,7 @@
         }
       )
 
+      //  Defines appearance for each folder.
       function foldersListClass(folder) {
         if (folder === model.selectedItem.folder) {
           return ["form-control", "font-weight-bold", "text-primary"]
@@ -183,6 +192,7 @@
         }
       }
 
+      //  Defines appearance for each file.
       function filesListClass(file) {
         if (file === model.selectedItem.file) {
           return ["form-control", "font-weight-bold", "text-primary"]
@@ -191,26 +201,32 @@
         }
       }
 
+      //  Emits request for path update.
       function emitListPathContents(path) {
         context.emit("list-path-contents", path)
       }
 
+      //  Clears 'search'.
       function clearSearch() {
         model.search = ""
       }
 
-      function closeModal() {
-        context.emit("change", false)
-      }
-
+      //  Clears 'model.selectedItem'.
       function clearSelectedItem() {
         model.selectedItem = ""
       }
 
+      //  Emits modal should be closed.
+      function closeModal() {
+        context.emit("change", false)
+      }
+
+      //  Triggers clearing search.
       function handleClearSearchClick() {
         clearSearch()
       }
 
+      //  Reinitialize for new path based on crumb.
       function handleCrumbClick(index) {
         clearSearch()
         clearSelectedItem()
@@ -222,10 +238,12 @@
         }
       }
 
+      //  Sets selected item based on 'folder'.
       function handleFolderClick(folder) {
         model.selectedItem = {folder: folder}
       }
 
+      //  Reinitialize for new path based on folder.
       function handleFolderDoubleClick(folder) {
         clearSearch()
         clearSelectedItem()
@@ -237,23 +255,28 @@
         }
       }
 
+      //  Sets selected item based on 'file'.
       function handleFileClick(file) {
         model.selectedItem = {file: file}
       }
 
+      //  Manages clearing modal action.
       function handleClearFooterClick() {
         context.emit("clear")
         closeModal()
       }
 
+      //  Manages canceling modal action.
       function handleCancelFooterClick() {
         closeModal()
       }
 
+      //  Manages selecting modal action.
       function handleSelectFooterClick() {
         let path = model.pathCrumbHeads.slice(1).concat([model.pathCrumbTail]).join("/") + "/"
 
         let selection = model.selectedItem[Object.keys(model.selectedItem)[0]]
+        //  Folder selection ends with '/'
         if (Object.keys(model.selectedItem)[0] === "folder") {
           selection += "/"
         }

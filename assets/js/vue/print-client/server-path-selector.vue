@@ -112,8 +112,11 @@
         modalFolders: []
       })
 
+      //  Get the serverFileExplorerChannel.
       let serverFileExplorerChannel = getServerFileExplorerChannel()
 
+      //  Gets list of folders and list of files from the server based on
+      //  'path'.
       function listPathContents(path) {
         serverFileExplorerChannel.push("list-path-contents", { path: path })
           .receive("ok", response => {
@@ -127,6 +130,8 @@
           })
       }
 
+
+      //  Initializes and triggers modal.
       function handleLaunchModalClick() {
         listPathContents(model.path)
         model.modalShow = true

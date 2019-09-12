@@ -5,8 +5,8 @@
 // **********
 
 // Overides before file will cascade changes throughout the file
-$component-active-bg: #343a40;
-$sizes: (10: 10%, 20: 20%);
+$component-active-bg: #343a40; // gray-800
+$breadcrumb-divider: quote(">");
 
 @import "~bootstrap/scss/variables";
 
