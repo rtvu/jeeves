@@ -31,21 +31,6 @@
       </div>
     </div>
 
-    <!-- <modal-path-selector
-      :show="model.modalShow"
-      :resource="resource"
-      :path="model.path"
-      :selection="model.selection"
-      :files="model.modalFiles"
-      :folders="model.modalFolders"
-      :type="type"
-
-      @list-path-contents="handleListPathContents($event)"
-      @clear="handleClear()"
-      @close="handleClose()"
-      @cancel="handleCancel()"
-      @select="handleSelect($event)">
-    </modal-path-selector> -->
     <modal-path-selector
       v-model="model.modalShow"
       :resource="resource"
@@ -57,6 +42,7 @@
 
       @list-path-contents="handleListPathContents($event)"
       @clear="handleClear()"
+      @cancel="handleCancel()"
       @select="handleSelect($event)">
     </modal-path-selector>
   </div>
@@ -112,6 +98,11 @@
         modalFolders: []
       })
 
+      //  Emits updated value.
+      function emitValue(value) {
+        context.emit("input", value)
+      }
+
       //  Get the serverFileExplorerChannel.
       let serverFileExplorerChannel = getServerFileExplorerChannel()
 
@@ -136,31 +127,36 @@
         model.modalShow = true
       }
 
-
+      //  Checks if 'props.value' path eists. If path exists, then set
+      //  'model.path' and 'model.selection'.
       function checkValuePathExists() {
-        let value = props.value.replace(/\/+$/, "/")
-
-        let isValueEmpty = (value === "")
-        let isValueFoldersClash = ((props.type === "folders") && (value.slice(-1) !== "/"))
-        let isValueFilesClash = ((props.type === "files") && (value.slice(-1) === "/"))
+        //  Conditions where 'props.value' path should not be checked.
+        let isValueEmpty = (props.value === "")
+        let isValueFoldersClash = ((props.type === "folders") && (props.value.slice(-1) !== "/"))
+        let isValueFilesClash = ((props.type === "files") && (props.value.slice(-1) === "/"))
 
         if (isValueEmpty || isValueFoldersClash || isValueFilesClash) {
+          //  Set 'model.path' and 'model.selection' when path checking is not
+          //  needed.
           model.path = props.defaultPath
           model.selection = ""
         } else {
+          //  Determines if path request is for file or folder.
           let request = ""
-          if (value.slice(-1) === "/") {
+          if (props.value.slice(-1) === "/") {
             request = "does-folder-exist"
           } else {
             request = "does-file-exist"
           }
 
-          serverFileExplorerChannel.push(request, { path: value })
+          // Sends request to server.
+          serverFileExplorerChannel.push(request, { path: props.value })
             .receive("ok", response => {
+              //  Handles response.
               if (response.exists) {
-                model.path = pathHelper.dirname(value) + "/"
+                model.path = pathHelper.dirname(props.value) + "/"
 
-                model.selection = pathHelper.basename(value)
+                model.selection = pathHelper.basename(props.value)
                 if (request === "does-folder-exist") {
                   model.selection += "/"
                 }
@@ -173,38 +169,42 @@
         }
       }
 
-      onMounted(() => {
-        checkValuePathExists()
-
-        watch(
-          () => props.value,
-          (value) => {
-            console.log("hello")
-            console.log("value" + props.value)
-            console.log("ps: "+model.path + model.selection)
-            if (props.value !== model.path + model.selection) {
-              checkValuePathExists()
-            }
-          }
-        )
-      })
-
+      //  Handles listing path contents.
       function handleListPathContents(path) {
         listPathContents(path)
       }
 
+      //  Handles clearing state.
       function handleClear() {
         model.path = ""
         model.selection = ""
       }
 
-
-
+      // Handles selecting new path.
       function handleSelect(object) {
         model.path = object.path
         model.selection = object.selection
+        emitValue(model.path + model.selection)
       }
 
+      watch(
+        () => props.value,
+        (value) => {
+          //  Formats value.
+          let formattedValue = value.replace(/\/+$/, "/")
+
+          if (formattedValue !== value) {
+            //  Emit 'formattedValue'.
+            emitValue(formattedValue)
+          } else {
+            if (value !== model.path + model.selection) {
+              //  Value has been updated if not equal to
+              //  'model.path + model.selection'.
+              checkValuePathExists()
+            }
+          }
+        }
+      )
 
       return {
         model,
