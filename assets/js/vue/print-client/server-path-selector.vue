@@ -40,7 +40,7 @@
       :folders="model.modalFolders"
       :type="type"
 
-      @list-path-contents="handleListPathContents($event)"
+      @set-path="handleSetPath($event)"
       @clear="handleClear()"
       @cancel="handleCancel()"
       @select="handleSelect($event)">
@@ -108,8 +108,8 @@
 
       //  Gets list of folders and list of files from the server based on
       //  'path'.
-      function listPathContents(path) {
-        serverFileExplorerChannel.push("list-path-contents", { path: path })
+      function listPathContents() {
+        serverFileExplorerChannel.push("list-path-contents", { path: model.path })
           .receive("ok", response => {
             if (props.type === "folders") {
               model.modalFiles = []
@@ -123,7 +123,7 @@
 
       //  Initializes and triggers modal.
       function handleLaunchModalClick() {
-        listPathContents(model.path)
+        listPathContents()
         model.modalShow = true
       }
 
@@ -170,13 +170,14 @@
       }
 
       //  Handles listing path contents.
-      function handleListPathContents(path) {
-        listPathContents(path)
+      function handleSetPath(path) {
+        model.path = path
+        listPathContents()
       }
 
       //  Handles clearing state.
       function handleClear() {
-        model.path = ""
+        model.path = props.defaultPath
         model.selection = ""
       }
 
@@ -210,8 +211,7 @@
         model,
         handleLaunchModalClick,
         checkValuePathExists,
-
-        handleListPathContents,
+        handleSetPath,
         handleClear,
         handleSelect
       }

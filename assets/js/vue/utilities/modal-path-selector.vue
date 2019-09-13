@@ -202,8 +202,8 @@
       }
 
       //  Emits request for path update.
-      function emitListPathContents(path) {
-        context.emit("list-path-contents", path)
+      function emitSetPath(path) {
+        context.emit("set-path", path)
       }
 
       //  Clears 'search'.
@@ -232,9 +232,9 @@
         clearSelectedItem()
 
         if (index === 0) {
-          emitListPathContents("")
+          emitSetPath("")
         } else {
-          emitListPathContents(model.pathCrumbHeads.slice(1, index + 1).join("/") + "/")
+          emitSetPath(model.pathCrumbHeads.slice(1, index + 1).join("/") + "/")
         }
       }
 
@@ -249,9 +249,9 @@
         clearSelectedItem()
 
         if (model.pathCrumbTail === ".") {
-          emitListPathContents(folder + "/")
+          emitSetPath(folder + "/")
         } else {
-          emitListPathContents(model.pathCrumbHeads.slice(1).concat([model.pathCrumbTail, folder]).join("/") + "/")
+          emitSetPath(model.pathCrumbHeads.slice(1).concat([model.pathCrumbTail, folder]).join("/") + "/")
         }
       }
 
