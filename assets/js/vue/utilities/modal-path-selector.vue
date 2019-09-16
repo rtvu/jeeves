@@ -1,14 +1,24 @@
+<!--
+  'modal-path-selector' is a wrapper around 'b-modal' to sepcialize in
+  presenting a file/folder selection interface. Selection menu is solely
+  determined by props. Internal data is used for rendering and tracking
+  selection. Parent component receives events in order to update selection menu
+  or receive selection.
+-->
+
 <template>
+  <!-- Modal -->
   <b-modal
     no-close-on-esc
     no-close-on-backdrop
     hide-header-close
     size="lg"
 
-    :visible="show"
+    :visible="visible"
 
-    :title="'Select ' + resource">
+    :title="'Select: ' + resource">
 
+    <!-- Path Breadcrumb -->
     <nav class="p-1">
       <ol class="breadcrumb m-0">
         <li class="breadcrumb-item" v-for="(crumb, index) in model.pathCrumbHeads">
@@ -22,6 +32,7 @@
       </ol>
     </nav>
 
+    <!-- Search -->
     <div class="input-group input-group-sm p-1">
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="fas fa-search fa-fw text-secondary"></i></span>
@@ -32,7 +43,9 @@
       </div>
     </div>
 
+    <!-- File and Folder Selection Menu -->
     <div class="p-1" style="overflow-y: auto; max-height: 50vh;">
+      <!-- Folders List -->
       <div class="input-group input-group-sm" v-for="folder in showFolders">
         <div class="input-group-prepend">
           <span class="input-group-text"><i class="far fa-folder fa-fw text-info"></i></span>
@@ -40,6 +53,7 @@
         <input type="text" :class="foldersListClass(folder)" readonly @click="handleFolderClick(folder)" @dblclick="handleFolderDoubleClick(folder)" :value="folder" style="background-color: transparent;">
       </div>
 
+      <!-- Files List -->
       <div class="input-group input-group-sm" v-for="file in showFiles">
         <div class="input-group-prepend">
           <span class="input-group-text"><i class="far fa-file fa-fw text-success"></i></span>
@@ -48,6 +62,7 @@
       </div>
     </div>
 
+    <!-- Footer Buttons -->
     <template #modal-footer>
       <div class="w-100">
         <div class="float-left">
@@ -65,6 +80,7 @@
 <script>
   import { reactive, watch, computed } from "@vue/composition-api"
 
+  //  'array' will be filtered to contain 'search' unless search is empty.
   function searchFilter(array, search) {
     if (search === "") {
       return array
@@ -75,7 +91,7 @@
 
   export default {
     model: {
-      prop: "show",
+      prop: "visible",
       event: "change"
     },
     props: {
@@ -83,7 +99,7 @@
         type: String,
         default: ""
       },
-      show: {
+      visible: {
         type: Boolean,
         default: false
       },
