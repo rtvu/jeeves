@@ -1,9 +1,9 @@
 <!--
   'modal-path-selector' is a wrapper around 'b-modal' to sepcialize in
   presenting a file/folder selection interface. Selection menu is solely
-  determined by props. Internal data is used for rendering and tracking
-  selection. Parent component receives events in order to update selection menu
-  or receive selection.
+  determined by props. Internal data is used for rendering menu and tracking
+  possible selection. Parent component receives events in order to update
+  selection menu or receive selection.
 -->
 
 <template>
@@ -21,11 +21,13 @@
     <!-- Path Breadcrumb -->
     <nav class="p-1">
       <ol class="breadcrumb m-0">
+        <!-- Active Links Breadcrumbs -->
         <li class="breadcrumb-item" v-for="(crumb, index) in model.pathCrumbHeads">
           <a href="#" @click="handleCrumbClick(index); return false;">
             {{ crumb }}
           </a>
         </li>
+        <!-- Non-active Link Breadcrumb -->
         <li class="breadcrumb-item active">
           {{ model.pathCrumbTail }}
         </li>
@@ -46,7 +48,7 @@
     <!-- File and Folder Selection Menu -->
     <div class="p-1" style="overflow-y: auto; max-height: 50vh;">
       <!-- Folders List -->
-      <div class="input-group input-group-sm" v-for="folder in showFolders">
+      <div class="input-group input-group-sm" v-for="folder in model.showFolders">
         <div class="input-group-prepend">
           <span class="input-group-text"><i class="far fa-folder fa-fw text-info"></i></span>
         </div>
@@ -54,7 +56,7 @@
       </div>
 
       <!-- Files List -->
-      <div class="input-group input-group-sm" v-for="file in showFiles">
+      <div class="input-group input-group-sm" v-for="file in model.showFiles">
         <div class="input-group-prepend">
           <span class="input-group-text"><i class="far fa-file fa-fw text-success"></i></span>
         </div>
@@ -80,7 +82,7 @@
 <script>
   import { reactive, watch, computed } from "@vue/composition-api"
 
-  //  'array' will be filtered to contain 'search' unless search is empty.
+  //  'array' will be filtered to contain 'search' unless 'search' is empty.
   function searchFilter(array, search) {
     if (search === "") {
       return array
@@ -132,21 +134,19 @@
       },
     },
     setup(props, context) {
+      // Component's internal data.
       const model = reactive({
         search: "",
         selectFooterButtonDisabled: true,
         selectedItem: "",
         pathCrumbTail: "",
-        pathCrumbHeads: []
+        pathCrumbHeads: [],
+        showFiles: null,
+        showFolders: null
       })
 
-      //  Array for folders to show.
-      const showFolders = computed(() => {
-        return searchFilter(props.folders, model.search)
-      })
-
-      //  Array for files to show.
-      const showFiles = computed(() => {
+      //  Compute list of files to show.
+      model.showFiles = computed(() => {
         if (props.type === "folders") {
           return []
         } else {
@@ -154,11 +154,16 @@
         }
       })
 
+      //  Array for folders to show.
+      model.showFolders = computed(() => {
+        return searchFilter(props.folders, model.search)
+      })
+
       //  'pathCrumbTail' and 'pathCrumbHeads' are depedent on 'props.path'
       watch(
         () => props.path,
         (path) => {
-          //  ("./" + path) ==> add "." to path
+          //  ("./" + path) ==> concatenate "." and  'path'
           //  replace(/\/+$/, "") ==> remove ending "/"
           //  split("/") ==> split by "/"
           let partitionedPath = ("./" + path).replace(/\/+$/, "").split("/")
@@ -303,8 +308,6 @@
 
       return {
         model,
-        showFiles,
-        showFolders,
         foldersListClass,
         filesListClass,
         handleClearSearchClick,
