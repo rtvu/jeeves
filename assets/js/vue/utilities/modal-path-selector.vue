@@ -21,7 +21,7 @@
     <!-- Path Breadcrumb -->
     <nav class="p-1">
       <ol class="breadcrumb m-0">
-        <!-- Active Links Breadcrumbs -->
+        <!-- Active Link Breadcrumbs -->
         <li class="breadcrumb-item" v-for="(crumb, index) in model.pathCrumbHeads">
           <a href="#" @click="handleCrumbClick(index); return false;">
             {{ crumb }}
