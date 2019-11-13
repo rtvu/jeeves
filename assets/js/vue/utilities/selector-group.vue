@@ -3,7 +3,7 @@
 -->
 
 <template>
-  <div class="input-group" ref="container">
+  <div class="input-group" ref="containerRef">
     <div
       class="input-group-prepend"
       :class="model.widthClass"
@@ -15,13 +15,14 @@
 </template>
 
 <script>
+  import $ from "jquery"
   import Vue from "vue"
   import { onMounted, onBeforeUnmount, reactive, ref, watch } from "@vue/composition-api"
 
   export default {
     setup(props, context) {
       // Define template reference.
-      const container = ref(null)
+      const containerRef = ref(null)
 
       // Component's internal data.
       const model = reactive({
@@ -47,7 +48,7 @@
         watch(
           () => model.windowWidth,
           (windowWidth) => {
-            let containerWidth = container.value.offsetWidth
+            let containerWidth = $(containerRef.value).width()
 
             if (containerWidth < 350) {
               model.widthClass = "w-100"
@@ -69,7 +70,7 @@
       })
 
       return {
-        container,
+        containerRef,
         model
       }
     }
