@@ -8,13 +8,14 @@
     style="resize: none; overflow-y: hidden;"
     ref="textareaRef"
     :value="value"
-    @input="handleInput">
+    @input="handleInput"
+    v-on="listeners">
   </textarea>
 </template>
 
 <script>
   import Vue from "vue"
-  import { ref, onMounted } from "@vue/composition-api"
+  import { computed, onMounted, ref } from "@vue/composition-api"
 
   // Set `element's` height to its scrollHeight.
   function fitTextHeight(element) {
@@ -36,6 +37,13 @@
       // Define template reference.
       const textareaRef = ref(null)
 
+      // `listeners` should be equivalent to `context.listeners` without
+      // `input` property.
+      const listeners = computed(() => {
+        let { input, remainingListeners } = context.listeners
+        return remainingListeners
+      })
+
       // Emits input and adjusts textarea height as necessary.
       function handleInput(event) {
         context.emit("input", event.target.value)
@@ -49,7 +57,11 @@
         })
       })
 
-      return { textareaRef, handleInput }
+      return {
+        textareaRef,
+        listeners,
+        handleInput
+      }
     }
   }
 </script>

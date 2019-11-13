@@ -8,7 +8,8 @@
   <button
     type="button"
     style="overflow: hidden; white-space: nowrap;"
-    ref="buttonRef">
+    ref="buttonRef"
+    v-on="$listeners">
       <div style="display: inline-block;" ref="contentRef"></div>
       <div style="visibility: hidden; display: inline-block; position: absolute;" ref="htmlRef"></div>
       <div style="visibility: hidden; display: inline-block; position: absolute;" ref="ellipsisRef">{{ model.ellipsis }}</div>
