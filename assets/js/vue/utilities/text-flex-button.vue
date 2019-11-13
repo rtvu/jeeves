@@ -1,7 +1,6 @@
 <!--
-  'text-flex-button' is a wrapper around 'button' to specialize in either
-  displaying the button's content, ellipsis, or nothing depending on the
-  button's width.
+  'text-flex-button' is a wrapper around 'button' to either display the button's
+  content, an ellipsis, or nothing depending on the button's width.
 -->
 
 <template>

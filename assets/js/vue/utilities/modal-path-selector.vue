@@ -1,9 +1,9 @@
 <!--
-  'modal-path-selector' is a wrapper around 'b-modal' to sepcialize in
-  presenting a file/folder selection interface. Selection menu is solely
-  determined by props. Internal data is used for rendering menu and tracking
-  possible selection. Parent component receives events in order to update
-  selection menu or receive selection.
+  'modal-path-selector' is a wrapper around 'b-modal' to present a file/folder
+  selection interface. Selection menu is solely determined by props. Internal
+  data is used for rendering menu and tracking possible selection. Parent
+  component receives events in order to update selection menu or receive
+  selection.
 -->
 
 <template>

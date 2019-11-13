@@ -1,6 +1,6 @@
 <!--
-  'resizable-textarea' is a wrapper around 'textarea' to specialize in fitting
-  the textarea's height to the input text.
+  'resizable-textarea' is a wrapper around 'textarea' to fit the textarea's
+  height to the input text.
 -->
 
 <template>
