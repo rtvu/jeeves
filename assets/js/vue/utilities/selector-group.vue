@@ -1,3 +1,7 @@
+<!--
+  'selector-group' is an input group with a single prepend and single selector.
+-->
+
 <template>
   <div class="input-group" ref="container">
     <div
@@ -11,31 +15,39 @@
 </template>
 
 <script>
-  import $ from "jquery"
   import Vue from "vue"
-  import { onMounted, onBeforeUnmount, reactive, watch } from "@vue/composition-api"
+  import { onMounted, onBeforeUnmount, reactive, ref, watch } from "@vue/composition-api"
 
   export default {
     setup(props, context) {
+      // Define template reference.
+      const container = ref(null)
+
+      // Component's internal data.
       const model = reactive({
         windowWidth: -1,
         widthClass: "",
         widthStyle: ""
       })
 
-      onMounted(() => {
+      // Get window's inner width and set it to `model.windowWidth`.
+      function getWindowWidth() {
         model.windowWidth = window.innerWidth
+      }
+
+      onMounted(() => {
+        getWindowWidth()
 
         Vue.nextTick(() => {
-          window.addEventListener("resize", () => {
-            model.windowWidth = window.innerWidth
-          })
+          // Run `getWindowWidth` whenever window's resize event is triggered.
+          window.addEventListener("resize", getWindowWidth)
         })
 
+        // Window's width dictates the width of prepend.
         watch(
           () => model.windowWidth,
           (windowWidth) => {
-            let containerWidth = $(context.refs.container).width()
+            let containerWidth = container.value.offsetWidth
 
             if (containerWidth < 350) {
               model.widthClass = "w-100"
@@ -52,12 +64,12 @@
       })
 
       onBeforeUnmount(() => {
-        window.removeEventListener("resize", () => {
-          model.windowWidth = window.innerWidth
-        })
+        // Remove trigger.
+        window.removeEventListener("resize", getWindowWidth)
       })
 
       return {
+        container,
         model
       }
     }
