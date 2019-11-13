@@ -6,7 +6,7 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
-    "@vue/composition-api": "^0.3.0",
+    "@vue/composition-api": "^0.3.2",
     "bootstrap": "^4.2.1",
     "bootstrap-vue": "^2.0.0-rc.11",
     "jquery": "^3.3.1",
