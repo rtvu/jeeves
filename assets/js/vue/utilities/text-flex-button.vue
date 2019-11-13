@@ -1,38 +1,54 @@
+<!--
+  'text-flex-button' is a wrapper around 'button' to specialize in either
+  displaying the button's content, ellipsis, or nothing depending on the
+  button's width.
+-->
+
 <template>
   <button
     type="button"
     style="overflow: hidden; white-space: nowrap;"
-
-    ref="button"
-
-    v-bind="$attrs"
-    v-on="$listeners">
-      <div style="display: inline-block;" ref="content"></div>
-      <div style="visibility: hidden; display: inline-block; position: absolute;" ref="html"></div>
-      <div style="visibility: hidden; display: inline-block; position: absolute;" ref="ellipsis">{{ model.ellipsis }}</div>
+    ref="buttonRef">
+      <div style="display: inline-block;" ref="contentRef"></div>
+      <div style="visibility: hidden; display: inline-block; position: absolute;" ref="htmlRef"></div>
+      <div style="visibility: hidden; display: inline-block; position: absolute;" ref="ellipsisRef">{{ model.ellipsis }}</div>
   </button>
 </template>
 
 <script>
   import $ from "jquery"
   import Vue from "vue"
-  import { onMounted, onBeforeUnmount, reactive, watch } from "@vue/composition-api"
+  import { onMounted, onBeforeUnmount, reactive, ref, watch } from "@vue/composition-api"
 
   export default {
-    props: ["html"],
+    props: {
+      html: {
+        type: String,
+        default: ""
+      }
+    },
     setup(props, context) {
+      // Define template references.
+      const buttonRef = ref(null)
+      const contentRef = ref(null)
+      const htmlRef = ref(null)
+      const ellipsisRef = ref(null)
+
+      // Component's internal data.
       const model = reactive({
         ellipsis: "..",
         buttonWidth: -1,
         htmlWidth: -1,
         ellipsisWidth: -1,
-        selector: "None"
+        selector: null
       })
 
-      function getWidths() {
-        model.buttonWidth = $(context.refs.button).width()
-        model.htmlWidth = $(context.refs.html).width()
-        model.ellipsisWidth = $(context.refs.ellipsis).width()
+      // Updates `model.selector` based on the widths of button, html, and
+      // ellipsis.
+      function updateSelector() {
+        model.buttonWidth = $(buttonRef.value).width()
+        model.htmlWidth = $(htmlRef.value).width()
+        model.ellipsisWidth = $(ellipsisRef.value).width()
 
         if (model.buttonWidth < model.ellipsisWidth) {
           model.selector = "None"
@@ -45,49 +61,53 @@
 
       onMounted(() => {
         Vue.nextTick(() => {
-          window.addEventListener("resize", () => {
-            getWidths()
-          })
+          // Run `updateSelector` whenever window's resize event is triggered.
+          window.addEventListener("resize", updateSelector)
 
+          // Initialize `model.selector`.
+          updateSelector()
+
+          // 'model.selector' change triggers setting html of `contentRef` and
+          // emitting "selector" event.
           watch(
             () => model.selector,
             (selector) => {
               if (selector === "None") {
-                $(context.refs.content).html("")
+                $(contentRef.value).html("")
               } else if (selector === "HTML") {
-                $(context.refs.content).html(props.html)
+                $(contentRef.value).html(props.html)
               } else {
-                $(context.refs.content).html(model.ellipsis)
+                $(contentRef.value).html(model.ellipsis)
               }
 
               context.emit("selector", {selector: selector})
             }
           )
 
+          // 'props.html' change triggers setting html of `htmlRef` and
+          // requires running `updateSelector` on the next tick.
           watch(
             () => props.html,
             (html) => {
-              $(context.refs.html).html(html)
+              $(htmlRef.value).html(html)
 
               Vue.nextTick(() => {
-                getWidths()
+                updateSelector()
               })
             }
           )
-
-          Vue.nextTick(() => {
-            getWidths()
-          })
         })
       })
 
       onBeforeUnmount(() => {
-        window.removeEventListener("resize", () => {
-          getWidths()
-        })
+        window.removeEventListener("resize", updateSelector)
       })
 
       return {
+        buttonRef,
+        contentRef,
+        htmlRef,
+        ellipsisRef,
         model
       }
     }
