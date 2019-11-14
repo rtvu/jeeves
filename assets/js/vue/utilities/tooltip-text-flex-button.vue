@@ -53,7 +53,7 @@
         type: String,
         default: ""
       },
-    }
+    },
     components: {
       "text-flex-button": textFlexButton
     },

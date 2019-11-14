@@ -5,7 +5,7 @@
         <selector-group>
           <template #selector-prepend>
             <tooltip-text-flex-button
-              div-class="w-100"
+              container-class="w-100"
               button-class="btn btn-sm btn-dark btn-block"
               button-style="border-top-right-radius: 0; border-bottom-right-radius: 0;"
 
