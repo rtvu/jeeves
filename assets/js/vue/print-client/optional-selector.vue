@@ -70,17 +70,17 @@
       //  Constructs payload object to set 'optional-value':
       //    - 'object.path' is an array containing indices to target.
       //    - 'object.value' is value of target.
-      //  Emits event 'component-update' with payload object.
+      //  Emits event "component-update" with payload object.
       function handleClick() {
         let path = ["optionalValue"]
         let value = !props.components.optionalValue.value
-        context.emit('component-update', {path: path, value: value})
+        context.emit("component-update", {path: path, value: value})
       }
 
       //  'optional-selector' does not need to modify payload. Emits event
-      //  'component-update' with payload object.
+      //  "component-update" with payload object.
       function handleForwardComponentUpdate(object) {
-        context.emit('component-update', object)
+        context.emit("component-update", object)
       }
 
       return {

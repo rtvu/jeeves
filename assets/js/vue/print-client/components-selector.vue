@@ -32,22 +32,30 @@
         @component-update="handleComponentUpdate(index, $event)"
         :disabled="disabled">
       </optional-selector>
+      <dependencies-selector
+        v-if="components[index].tag === 'dependencies-selector'"
+        :components="components[index].components"
+        @component-update="handleComponentUpdate(index, $event)"
+        :disabled="disabled">
+      </dependencies-selector>
     </template>
   </div>
 </template>
 
 <script>
   import { ref, watch } from "@vue/composition-api"
+  import dependenciesSelector from "./dependencies-selector"
   import optionalSelector from "./optional-selector"
-  import serverFileSelector from "./server-path-selector"
+  import serverPathSelector from "./server-path-selector"
   import textSelector from "./text-selector"
   import textareaSelector from "./textarea-selector"
 
   export default {
     name: "components-selector",
     components: {
+      "dependencies-selector": dependenciesSelector,
       "optional-selector": optionalSelector,
-      "server-path-selector": serverFileSelector,
+      "server-path-selector": serverPathSelector,
       "text-selector": textSelector,
       "textarea-selector": textareaSelector
     },
@@ -84,19 +92,19 @@
       //  Constructs payload object:
       //    - 'object.path' is an array containing indices to target.
       //    - 'object.value' is value of target.
-      //  Emits event 'component-update' with payload object.
+      //  Emits event "component-update" with payload object.
       function handleValueInput(index, value) {
-        context.emit('component-update', {path: [index], value: value})
+        context.emit("component-update", {path: [index], value: value})
       }
 
       //  Payload object contains:
       //    - 'object.path' is an array containing indices to target.
       //    - 'object.value' is value of target.
       //  Updates 'object.path' with new index and then emits event
-      //  'component-update' with updated payload object.
+      //  "component-update" with updated payload object.
       function handleComponentUpdate(index, object) {
         object.path.unshift(index)
-        context.emit('component-update', object)
+        context.emit("component-update", object)
       }
 
       return {

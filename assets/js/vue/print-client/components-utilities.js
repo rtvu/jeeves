@@ -78,6 +78,19 @@ function formatComponentSpecialCases(object) {
       model: "optional-value",
       value: object.selected
     }
+  } else if (object.tag === "dependencies-selector") {
+    let value = ""
+    if (object.hasOwnProperty("value")) {
+      value = object.value
+    }
+    object.components.dependenciesTarget = {
+      tag: "server-path-selector",
+      model: "dependencies-target",
+      resource: object.resource,
+      defaultPath: object.defaultPath,
+      value: value,
+      type: object.type
+    }
   }
 }
 
