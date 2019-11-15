@@ -10,7 +10,7 @@ let valueTags = getValueTags()
 //  Returns an array containing tags of component objects that have 'components'
 //  property.
 function getComponentsTags() {
-  return ["components-selector", "optional-selector"]
+  return ["components-selector", "optional-selector", "dependencies-selector"]
 }
 //  Local copy for module.
 let componentsTags = getComponentsTags()
