@@ -6,7 +6,7 @@
           <template #selector-prepend>
             <tooltip-text-flex-button
               container-class="w-100"
-              button-class="btn btn-sm btn-secondary btn-block"
+              :button-class="buttonClass"
               button-style="border-top-right-radius: 0; border-bottom-right-radius: 0;"
 
               :html="resource"
@@ -30,19 +30,18 @@
         <hr class="text-secondary m-0" style="border-top: dashed 2px;">
       </div>
     </div>
-    <div class="row" v-if="components.optionalValue.value">
-      <div class="col ml-4">
-        <components-selector
-          :components="components"
-          @component-update="handleForwardComponentUpdate($event)"
-          :disabled="disabled">
-        </components-selector>
-      </div>
+    <div class="ml-4" v-if="components.optionalValue.value">
+      <components-selector
+        :components="components"
+        @component-update="handleForwardComponentUpdate($event)"
+        :disabled="disabled">
+      </components-selector>
     </div>
   </div>
 </template>
 
 <script>
+  import { ref, watch } from "@vue/composition-api"
   import tooltipTextFlexButton from "../utilities/tooltip-text-flex-button"
   import selectorGroup from "../utilities/selector-group"
 
@@ -67,6 +66,18 @@
       }
     },
     setup(props, context) {
+      const buttonClass = ref(null)
+      watch(
+        () => props.components.optionalValue.value,
+        (optionalValue) => {
+          if (optionalValue) {
+            buttonClass.value = "btn btn-sm btn-dark btn-block"
+          } else {
+            buttonClass.value = "btn btn-sm btn-secondary btn-block"
+          }
+        }
+      )
+
       //  Constructs payload object to set 'optional-value':
       //    - 'object.path' is an array containing indices to target.
       //    - 'object.value' is value of target.
@@ -84,6 +95,7 @@
       }
 
       return {
+        buttonClass,
         handleClick,
         handleForwardComponentUpdate
       }

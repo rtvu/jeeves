@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div>
     <server-path-selector
       :type="components.dependenciesTarget.type"
       :resource="components.dependenciesTarget.resource"
@@ -9,15 +8,12 @@
       @input="handleValueInput($event)"
       :disabled="disabled">
     </server-path-selector>
-  </div>
-    <div class="row">
-    <div class="col ml-4">
+    <div class="ml-4">
       <components-selector
         :components="components"
         @component-update="handleForwardComponentUpdate($event)"
         :disabled="disabled">
       </components-selector>
-    </div>
     </div>
   </div>
 </template>
